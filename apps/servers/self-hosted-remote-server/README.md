@@ -8,21 +8,32 @@
 
 ## Quick start
 
-### Installing a repository using a standard git clone
+### Installing only server part
 
 ```bash
-  git clone https://github.com/yourname/remote-pycharm
+  # 1. Clone repository
+  git clone --filter=blob:none --sparse https://github.com/k-racubo/Remote-PyCharm
+  cd Remote-PyCharm
+
+  # 2. Switch to develop branch
+  git checkout develop
+
+  # 3. Configure sparse-checkout for server
+  git sparse-checkout set apps/servers/self-hosted-remote-server
+
+  # 4. Get the files
+  git checkout
 ```
-> go to "apps/servers/self-hosted-remote-server"
 
-— Build container:
+— Build and run with Docker
 
-```docker
+```bash
+  # build container
+  cd self-hosted-remote-server
   docker build -f deployment/Dockerfile -t your_name .
-```
-
-— Run docker container:
-
-```bash
+  
+  # run container
   docker run -d --restart=always --name your_name -p 8765:8765 -e AUTH_TOKEN=your_auth_token
 ```
+> important: you must set AUTH_TOKEN environment variable when starting container
+
