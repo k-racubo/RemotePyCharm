@@ -10,13 +10,13 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
     LaunchedEffect(Unit) {
-        delay(3000) // Ждем 3 секунды
+        delay(3000)
         onTimeout()
     }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Splash Screen")
+        Text(text = "RemotePyCharm")
     }
 }
