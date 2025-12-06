@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kracubo.app.ui.screens.mainmenu.LocalConnectionScreen
 import com.kracubo.app.ui.screens.mainmenu.RemoteScreen
 import com.kracubo.app.ui.screens.mainmenu.SplashScreen
 import com.kracubo.app.ui.screens.mainmenu.MainScreen
@@ -39,6 +40,9 @@ class MainActivity : ComponentActivity() {
                             RemoteScreen(
                                 Connection = {}
                             )
+                        }
+                        composable("LocalScreen"){
+                            LocalConnectionScreen()
                         }
                     }
                 }
