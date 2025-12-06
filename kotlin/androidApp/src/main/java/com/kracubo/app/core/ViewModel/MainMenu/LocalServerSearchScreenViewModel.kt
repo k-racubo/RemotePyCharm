@@ -1,4 +1,4 @@
-package com.kracubo.app.core.ViewModel.MainMenu
+package com.kracubo.app.core.viewmodel.mainmenu
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

@@ -1,4 +1,4 @@
-package com.kracubo.app.ui.screens.MainMenu
+package com.kracubo.app.ui.screens.mainmenu
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
