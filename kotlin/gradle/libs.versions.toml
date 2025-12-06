@@ -1,0 +1,47 @@
+# Version catalog is a central place for you to declare and version dependencies
+# https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
+# https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
+
+[versions]
+kotlin = "2.1.0"
+
+agp = "8.12.0"
+
+intellijPlatform = "2.7.1"
+
+androidxCore = "1.17.0"
+androidxLifecycle = "2.10.0"
+androidxActivity = "1.12.0"
+
+composeBom = "2025.11.01"
+
+androidxComposeNav = "2.9.6"
+activityKtx = "1.12.0"
+
+[libraries]
+androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
+androidxLifecycle = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidxActivity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+androidxComposeBom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+
+androidxComposeUi = { module = "androidx.compose.ui:ui" }
+androidxComposeGraphics = { module = "androidx.compose.ui:ui-graphics" }
+androidxComposePreviewTooling = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidxComposeMaterial3 = { module = "androidx.compose.material3:material3" }
+
+androidxComposeNav = { module = "androidx.navigation:navigation-compose", version.ref = "androidxComposeNav" }
+activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+
+intellijPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
+
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+
+
+
