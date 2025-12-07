@@ -21,7 +21,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RemoteScreen(Connection: () -> Unit){
+fun RemoteScreen(
+    Connection: () -> Unit,
+    Exit: () -> Unit){
     var serverIp by remember { mutableStateOf("") }
     var serverPort by remember { mutableStateOf("") }
     var authToken by remember { mutableStateOf("") }
@@ -60,6 +62,9 @@ fun RemoteScreen(Connection: () -> Unit){
             )
             Button(onClick = { Connection() }) {
                 Text("Подключение")
+            }
+            Button(onClick = { Exit() }) {
+                Text("Выйти")
             }
         }
     }

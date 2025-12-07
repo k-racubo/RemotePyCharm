@@ -39,11 +39,24 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("RemoteScreen") {
                             RemoteScreen(
-                                Connection = {}
+                                Connection = {},
+                                Exit = {
+                                    navController.navigate("main"){
+                                        popUpTo("RemoteScreen"){
+                                            inclusive = true
+                                        }
+                                    }
+                                }
                             )
                         }
                         composable("LocalScreen"){
-                            LocalConnectionScreen(CancelServerSearch = { navController.navigate("main")})
+                            LocalConnectionScreen(CancelServerSearch = {
+                                navController.navigate("main"){
+                                    popUpTo("LocalScreen"){
+                                        inclusive = true
+                                    }
+                                }
+                            })
                         }
                     }
                 }
