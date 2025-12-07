@@ -18,6 +18,9 @@ class LocalServerSearchScreenViewModel : ViewModel() {
             searchState = SearchState.SEARCHING  //в будущем добавить условия нахождения и ошибки
         }                                        // пока что будет вечная загрузка
     }
+    init {
+        startSearch()
+    }
 }
 enum class  SearchState {
     SEARCHING,
