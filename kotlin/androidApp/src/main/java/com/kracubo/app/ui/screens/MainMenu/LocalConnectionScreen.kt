@@ -17,8 +17,10 @@ import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 
 @Composable
-fun LocalConnectionScreen(viewModel: LocalServerSearchScreenViewModel = viewModel(),
-                          CancelServerSearch: () -> Unit){
+fun LocalConnectionScreen(
+    viewModel: LocalServerSearchScreenViewModel = viewModel(),
+    CancelServerSearch: () -> Unit)
+    {
     val State = viewModel.searchState
     when (State){
         SearchState.SEARCHING -> {
