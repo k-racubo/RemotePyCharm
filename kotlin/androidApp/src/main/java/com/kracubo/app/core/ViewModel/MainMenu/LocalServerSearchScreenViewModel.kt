@@ -22,8 +22,3 @@ class LocalServerSearchScreenViewModel : ViewModel() {
         startSearch()
     }
 }
-enum class  SearchState {
-    SEARCHING,
-    FOUND,
-    ERROR
-}
