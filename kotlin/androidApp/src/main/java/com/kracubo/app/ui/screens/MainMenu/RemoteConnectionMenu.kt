@@ -1,4 +1,4 @@
-package com.kracubo.app.ui.screens.MainMenu
+package com.kracubo.app.ui.screens.mainmenu
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +21,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RemoteScreen(Connection: () -> Unit){
+fun RemoteScreen(
+    Connection: () -> Unit,
+    Exit: () -> Unit){
     var serverIp by remember { mutableStateOf("") }
     var serverPort by remember { mutableStateOf("") }
     var authToken by remember { mutableStateOf("") }
@@ -32,13 +34,13 @@ fun RemoteScreen(Connection: () -> Unit){
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             OutlinedTextField(
                 value = serverIp,
                 onValueChange = { serverIp = it },
                 label = { Text("IP адрес сервера") },
-                modifier = Modifier.fillMaxWidth(0.75f).padding(bottom = 14.dp)
+                modifier = Modifier.fillMaxWidth(0.75f)
                     .graphicsLayer { clip = true },
                 interactionSource = remember { MutableInteractionSource() }
             )
@@ -46,7 +48,7 @@ fun RemoteScreen(Connection: () -> Unit){
                 value = serverPort,
                 onValueChange = { serverPort = it },
                 label = { Text("Порт") },
-                modifier = Modifier.fillMaxWidth(0.75f).padding(bottom = 14.dp)
+                modifier = Modifier.fillMaxWidth(0.75f)
                     .graphicsLayer { clip = true },
                 interactionSource = remember { MutableInteractionSource() }
             )
@@ -54,12 +56,15 @@ fun RemoteScreen(Connection: () -> Unit){
                 value = authToken,
                 onValueChange = { authToken = it },
                 label = { Text("Токен авторизации") },
-                modifier = Modifier.fillMaxWidth(0.75f).padding(bottom = 14.dp)
+                modifier = Modifier.fillMaxWidth(0.75f)
                     .graphicsLayer { clip = true },
                 interactionSource = remember { MutableInteractionSource() }
             )
-            Button(onClick = { Connection() }) {
+            Button(onClick = { Connection() }, modifier = Modifier.fillMaxWidth(0.75f)) {
                 Text("Подключение")
+            }
+            Button(onClick = { Exit() }, modifier = Modifier.fillMaxWidth(0.75f)) {
+                Text("Выйти")
             }
         }
     }

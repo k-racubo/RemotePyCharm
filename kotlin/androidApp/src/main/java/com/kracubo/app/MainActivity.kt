@@ -9,14 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.kracubo.app.ui.screens.MainMenu.MainScreen
-import com.kracubo.app.ui.screens.MainMenu.RemoteScreen
-import com.kracubo.app.ui.screens.MainMenu.SplashScreen
+import com.kracubo.app.ui.screens.mainmenu.LocalConnectionScreen
+import com.kracubo.app.ui.screens.mainmenu.MainScreen
+import com.kracubo.app.ui.screens.mainmenu.RemoteScreen
+import com.kracubo.app.ui.screens.mainmenu.SplashScreen
 import com.kracubo.app.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        actionBar?.hide()
         setContent {
             AppTheme(darkTheme = true){
                 Surface(Modifier.fillMaxSize()) {
@@ -37,8 +39,24 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("RemoteScreen") {
                             RemoteScreen(
-                                Connection = {}
+                                Connection = {},
+                                Exit = {
+                                    navController.navigate("main"){
+                                        popUpTo("RemoteScreen"){
+                                            inclusive = true
+                                        }
+                                    }
+                                }
                             )
+                        }
+                        composable("LocalScreen"){
+                            LocalConnectionScreen(CancelServerSearch = {
+                                navController.navigate("main"){
+                                    popUpTo("LocalScreen"){
+                                        inclusive = true
+                                    }
+                                }
+                            })
                         }
                     }
                 }

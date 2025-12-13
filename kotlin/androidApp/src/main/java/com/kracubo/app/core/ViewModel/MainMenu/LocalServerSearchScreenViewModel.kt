@@ -1,4 +1,4 @@
-package com.kracubo.app.core.ViewModel.MainMenu
+package com.kracubo.app.core.viewmodel.mainmenu
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,9 +18,7 @@ class LocalServerSearchScreenViewModel : ViewModel() {
             searchState = SearchState.SEARCHING  //в будущем добавить условия нахождения и ошибки
         }                                        // пока что будет вечная загрузка
     }
-}
-enum class  SearchState {
-    SEARCHING,
-    FOUND,
-    ERROR
+    init {
+        startSearch()
+    }
 }
