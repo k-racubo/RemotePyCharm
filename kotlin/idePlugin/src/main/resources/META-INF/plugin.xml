@@ -6,12 +6,5 @@
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
 
-
-        <toolWindow
-            id="Remote PyCharm Control panel"
-            anchor="right"
-            factoryClass="com.kracubo.toolwindow.ControlPanel"
-            doNotActivateOnStart="true"
-            secondary="false"/>
     </extensions>
 </idea-plugin>
