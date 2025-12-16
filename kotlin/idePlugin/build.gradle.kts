@@ -21,6 +21,17 @@ repositories {
 dependencies {
     implementation(project(":api"))
 
+    implementation(libs.ktorCore)
+    implementation(libs.ktorNetty)
+    implementation(libs.ktorWebsockets)
+    implementation(libs.ktorContentNegotation)
+    implementation(libs.ktorSerialization)
+    implementation(libs.ktorCors)
+
+    implementation(libs.kotlinxCoroutines)
+
+    implementation(libs.kotlinxSerialization)
+
     intellijPlatform {
         create("PC", "2025.2")
 
