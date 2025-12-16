@@ -5,7 +5,9 @@ import com.kracubo.controlPanel.components.BackBtn
 import com.kracubo.controlPanel.components.PortField
 import com.kracubo.controlPanel.layout.DynamicGridLayout
 import com.kracubo.controlPanel.logger.Logger
+import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.networking.localServer.LocalWebSocketServer
 import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
@@ -46,8 +48,12 @@ class LocalServerButtonsCard(
 
             addActionListener {
                 Logger.log("\"Stop Server\" button action", SenderType.LOGGER)
-                // TODO create logic for call stop server and log write
-                isLocalServerStarted = false // fucking заглушка
+
+                SwingUtilities.invokeLater {
+                    LocalWebSocketServer.stop()
+                }
+
+                isLocalServerStarted = false
 
             }
         }
@@ -64,8 +70,20 @@ class LocalServerButtonsCard(
 
             addActionListener {
                 Logger.log("\"Start Server\" button action", SenderType.LOGGER)
-                // TODO create call for start server
-                isLocalServerStarted = true // fucking заглушка
+
+                SwingUtilities.invokeLater {
+                    val isStarted = LocalWebSocketServer.start(portField.portTextField.text.toInt())
+
+                    if (isStarted) {
+                        Logger.log("Local server started! localhost:${portField.portTextField.text}",
+                            senderType = SenderType.LOCAL_SERVER)
+                    }else {
+                        Logger.log("Local server not started! Possible reason: ${portField.portTextField.text} busy",
+                            senderType = SenderType.LOCAL_SERVER, messageType = MessageType.ERROR)
+                    }
+
+                    isLocalServerStarted = isStarted
+                }
             }
         }
 
