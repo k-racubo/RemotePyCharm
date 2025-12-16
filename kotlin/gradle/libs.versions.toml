@@ -42,7 +42,6 @@ ktorNetty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor
 ktorWebsockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
 ktorContentNegotation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 ktorCors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
-ktorAuth = { group = "io.ktor", name = "ktor-server-auth", version.ref = "ktor" }
 
 kotlinxSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
