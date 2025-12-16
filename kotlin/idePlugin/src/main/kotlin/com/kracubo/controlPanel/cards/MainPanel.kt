@@ -3,7 +3,6 @@ package com.kracubo.controlPanel.cards
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.components.JBLabel
-import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.ui.JBUI
 import com.kracubo.controlPanel.components.LogControlPanel
 import com.kracubo.controlPanel.components.LogWindow
