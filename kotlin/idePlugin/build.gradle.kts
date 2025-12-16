@@ -22,7 +22,7 @@ dependencies {
     implementation(project(":api"))
 
     implementation(libs.ktorCore)
-    implementation(libs.ktorNetty)
+    implementation(libs.ktorCio)
     implementation(libs.ktorWebsockets)
     implementation(libs.ktorContentNegotation)
     implementation(libs.ktorSerialization)

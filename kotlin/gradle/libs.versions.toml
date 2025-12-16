@@ -38,7 +38,7 @@ androidxComposeNav = { module = "androidx.navigation:navigation-compose", versio
 activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 
 ktorCore = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
-ktorNetty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
+ktorCio = { group = "io.ktor", name = "ktor-server-cio", version.ref = "ktor" }
 ktorWebsockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
 ktorContentNegotation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 ktorCors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
