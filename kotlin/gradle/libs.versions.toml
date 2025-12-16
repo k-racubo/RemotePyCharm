@@ -18,6 +18,11 @@ composeBom = "2025.11.01"
 androidxComposeNav = "2.9.6"
 activityKtx = "1.12.0"
 
+ktor = "3.1.2"
+kotlinxSerialization = "1.7.0"
+
+kotlinxCoroutines = "1.10.2"
+
 [libraries]
 androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
 androidxLifecycle = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
@@ -32,6 +37,17 @@ androidxComposeMaterial3 = { module = "androidx.compose.material3:material3" }
 androidxComposeNav = { module = "androidx.navigation:navigation-compose", version.ref = "androidxComposeNav" }
 activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 
+ktorCore = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
+ktorNetty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
+ktorWebsockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
+ktorContentNegotation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
+ktorCors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
+ktorAuth = { group = "io.ktor", name = "ktor-server-auth", version.ref = "ktor" }
+
+kotlinxSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+ktorSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+kotlinxCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
