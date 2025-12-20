@@ -22,4 +22,8 @@ class LocalServerSearchScreenViewModel : ViewModel() {
         searchJob?.cancel()
         searchState = SearchState.HOLD
     }
+    fun errorSearch(){
+        searchJob?.cancel()
+        searchState = SearchState.ERROR
+    }
 }
