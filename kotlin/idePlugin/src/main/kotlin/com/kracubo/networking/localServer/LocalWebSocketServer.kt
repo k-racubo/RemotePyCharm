@@ -1,14 +1,18 @@
 package com.kracubo.networking.localServer
 
+import PluginServerInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.SenderType
 import com.kracubo.events.localServer.ServerDownTopics
 import com.kracubo.events.localServer.UnexpectedServerDown
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
@@ -40,6 +44,10 @@ object LocalWebSocketServer {
                     timeout = 30.seconds
                 }
 
+                install(ContentNegotiation) {
+                    json()
+                }
+
                 routing {
                     webSocket("/ws") {
                         for (frame in incoming) {
@@ -56,7 +64,13 @@ object LocalWebSocketServer {
                     }
 
                     get("/crash") {
+                        call.respond("server down")
                         server?.stop(0, 0)
+                    }
+
+                    get("/info") {
+                        val response = PluginServerInfo("RemotePyCharm", "1.0.0")
+                        call.respond(response)
                     }
                 }
             }
