@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,12 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
+import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 
 @Composable
 fun LocalConnectionScreen(
     exitToMainScreen: () -> Unit) {
 
     var searchPort by remember {mutableStateOf("")}
+    val viewModel: LocalServerSearchScreenViewModel = viewModel()
+
 
     Box(
         modifier = Modifier
@@ -39,22 +46,41 @@ fun LocalConnectionScreen(
                 text = "Подключение в локальной сети",
                 fontSize = 20.sp,
             )
-            OutlinedTextField(
-                value = searchPort,
-                onValueChange = { searchPort = it },
-                label = { Text( text = "Порт")} ,
-                modifier = Modifier.fillMaxWidth(0.75f)
-                    .graphicsLayer { clip = true },
-                interactionSource = remember { MutableInteractionSource() }
-            )
-            Button(
-                onClick = exitToMainScreen,
-                modifier = Modifier.fillMaxWidth(0.75f)
-            ) {
-                Text(text = "Подключение")
+            when(viewModel.searchState){
+                SearchState.ERROR -> {
+
+                }
+                SearchState.FOUND -> {
+
+                }
+                SearchState.SEARCHING ->{
+                    Text(text = "Поиск Сервера...")
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(64.dp),
+                        strokeWidth = 4.dp
+                    )
+                }
+                SearchState.HOLD -> {
+                    OutlinedTextField(
+                        value = searchPort,
+                        onValueChange = { searchPort = it },
+                        label = { Text( text = "Порт")} ,
+                        modifier = Modifier.fillMaxWidth(0.75f)
+                            .graphicsLayer { clip = true },
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                    Button(
+                        onClick = { viewModel.startSearch()},
+                        modifier = Modifier.fillMaxWidth(0.75f)
+                    ) {
+                        Text(text = "Подключение")
+                    }
+                }
             }
             Button(
-                onClick = exitToMainScreen,
+                onClick = {
+                    exitToMainScreen()
+                    viewModel.stopSearch() },
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {
                 Text(text = "Назад")
