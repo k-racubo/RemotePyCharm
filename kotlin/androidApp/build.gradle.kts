@@ -52,4 +52,5 @@ dependencies {
     implementation(libs.androidxComposeMaterial3)
     implementation(libs.androidxComposeNav)
     implementation(libs.activityKtx)
+    implementation(libs.materialIconsOld)
 }

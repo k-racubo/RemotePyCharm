@@ -22,6 +22,7 @@ ktor = "3.1.2"
 kotlinxSerialization = "1.7.0"
 
 kotlinxCoroutines = "1.10.2"
+oldMaterialIcons = "1.7.7"
 
 [libraries]
 androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -48,6 +49,7 @@ kotlinxSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serial
 ktorSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinxCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 
+materialIconsOld = { group="androidx.compose.material" , name ="material-icons-core", version.ref = "oldMaterialIcons"}
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
@@ -58,3 +60,5 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+
