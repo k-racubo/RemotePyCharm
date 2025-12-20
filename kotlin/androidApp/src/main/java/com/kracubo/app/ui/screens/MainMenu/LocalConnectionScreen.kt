@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,8 +30,7 @@ import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 
 @Composable
-fun LocalConnectionScreen(
-    exitToMainScreen: () -> Unit) {
+fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
 
     var searchPort by remember {mutableStateOf("")}
     val viewModel: LocalServerSearchScreenViewModel = viewModel()
@@ -48,7 +51,13 @@ fun LocalConnectionScreen(
             )
             when(viewModel.searchState){
                 SearchState.ERROR -> {
-
+                    Text(text = "Сервер не найден")
+                    Icon(
+                        imageVector = Icons.Filled.Warning,
+                        contentDescription = "Ошибка",
+                        modifier = Modifier.size(55.dp),
+                        tint = Color.Red
+                    )
                 }
                 SearchState.FOUND -> {
 
@@ -79,8 +88,12 @@ fun LocalConnectionScreen(
             }
             Button(
                 onClick = {
-                    exitToMainScreen()
-                    viewModel.stopSearch() },
+                    if(viewModel.searchState == SearchState.HOLD){
+                        exitToMainScreen()
+                    }else{
+                        viewModel.searchState = SearchState.HOLD
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {
                 Text(text = "Назад")
@@ -88,3 +101,4 @@ fun LocalConnectionScreen(
         }
     }
 }
+
