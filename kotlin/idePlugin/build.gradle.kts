@@ -28,9 +28,16 @@ dependencies {
     implementation(libs.ktorSerialization)
     implementation(libs.ktorCors)
 
-    implementation(libs.kotlinxCoroutines)
-
     implementation(libs.kotlinxSerialization)
+
+    implementation(libs.mDnsCore)
+
+    configurations.all {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
+    }
+
+    compileOnly(libs.kotlinxCoroutines)
 
     intellijPlatform {
         create("PC", "2025.2")
