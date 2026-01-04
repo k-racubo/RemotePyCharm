@@ -1,5 +1,6 @@
 package com.kracubo.controlPanel.cards
 
+import com.intellij.openapi.application.EDT
 import com.intellij.util.ui.JBUI
 import com.kracubo.controlPanel.components.BackBtn
 import com.kracubo.controlPanel.components.PortField
@@ -8,6 +9,11 @@ import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
 import com.kracubo.networking.localServer.LocalWebSocketServer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
@@ -16,6 +22,8 @@ class LocalServerButtonsCard(
     onBackBtn: () -> Unit,
     private val onServerStateChanged: (Boolean) -> Unit
 ) : JPanel() {
+
+    val pluginScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     var dynamicGridLayout = DynamicGridLayout(2, 2, 15, 10)
 
@@ -49,12 +57,13 @@ class LocalServerButtonsCard(
             addActionListener {
                 Logger.log("\"Stop Server\" button action", SenderType.LOGGER)
 
-                SwingUtilities.invokeLater {
+                pluginScope.launch {
                     LocalWebSocketServer.stop()
+
+                    withContext(Dispatchers.EDT) {
+                        isLocalServerStarted = false
+                    }
                 }
-
-                isLocalServerStarted = false
-
             }
         }
 
@@ -71,18 +80,20 @@ class LocalServerButtonsCard(
             addActionListener {
                 Logger.log("\"Start Server\" button action", SenderType.LOGGER)
 
-                SwingUtilities.invokeLater {
+                pluginScope.launch {
                     val isStarted = LocalWebSocketServer.start(portField.portTextField.text.toInt())
 
-                    if (isStarted) {
-                        Logger.log("Local server started! localhost:${portField.portTextField.text}",
-                            senderType = SenderType.LOCAL_SERVER)
-                    }else {
-                        Logger.log("Local server not started! Possible reason: ${portField.portTextField.text} busy",
-                            senderType = SenderType.LOCAL_SERVER, messageType = MessageType.ERROR)
-                    }
+                    withContext(Dispatchers.EDT) {
+                        if (isStarted) {
+                            Logger.log("Local server started! localhost:${portField.portTextField.text}",
+                                senderType = SenderType.LOCAL_SERVER)
+                        }else {
+                            Logger.log("Local server not started! Possible reason: ${portField.portTextField.text} busy",
+                                senderType = SenderType.LOCAL_SERVER, messageType = MessageType.ERROR)
+                        }
 
-                    isLocalServerStarted = isStarted
+                        isLocalServerStarted = isStarted
+                    }
                 }
             }
         }
