@@ -1,6 +1,6 @@
 <idea-plugin>
+    <id>com.kracubo.remotepycharm</id>
     <name>Remote PyCharm</name>
-    <version>1.0.0</version>
     <vendor>KRACUBO</vendor>
 
     <depends>com.intellij.modules.platform</depends>
