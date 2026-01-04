@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("LocalScreen"){
-                            LocalConnectionScreen(CancelServerSearch = {
+                            LocalConnectionScreen(exitToMainScreen = {
                                 navController.navigate("main"){
                                     popUpTo("LocalScreen"){
                                         inclusive = true

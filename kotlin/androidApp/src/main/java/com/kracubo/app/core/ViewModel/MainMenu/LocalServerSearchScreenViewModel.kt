@@ -9,7 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class LocalServerSearchScreenViewModel : ViewModel() {
-    var searchState by mutableStateOf<SearchState>(SearchState.SEARCHING)
+    var searchState by mutableStateOf<SearchState>(SearchState.HOLD)
     private var searchJob: Job? = null
 
     fun startSearch() {
@@ -18,7 +18,12 @@ class LocalServerSearchScreenViewModel : ViewModel() {
             searchState = SearchState.SEARCHING  //в будущем добавить условия нахождения и ошибки
         }                                        // пока что будет вечная загрузка
     }
-    init {
-        startSearch()
+    fun stopSearch(){
+        searchJob?.cancel()
+        searchState = SearchState.HOLD
+    }
+    fun errorSearch(){
+        searchJob?.cancel()
+        searchState = SearchState.ERROR
     }
 }
