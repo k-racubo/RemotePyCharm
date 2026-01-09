@@ -5,6 +5,8 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.kracubo.controlPanel.logger.Logger
+import com.kracubo.controlPanel.logger.MessageType
+import com.kracubo.controlPanel.logger.SenderType
 import java.awt.Color
 import java.awt.Cursor
 import java.awt.Desktop
@@ -32,15 +34,15 @@ class LogControlPanel : JPanel() {
             addActionListener { Logger.clearLogWindow() }
         }
 
-        clickableText = JBLabel("Logs saved in memory..").apply {
+        clickableText = JBLabel("Open logs directory").apply {
             val normalColor = JBColor(
                 Color(0, 102, 204),
                 Color(100, 180, 255)
             )
 
             val hoverColor = JBColor(
-                Color(255, 102, 0),   // Orange for light theme
-                Color(255, 180, 100)  // Light orange for dark theme
+                Color(255, 102, 0),
+                Color(255, 180, 100)
             )
 
             foreground = normalColor
@@ -50,27 +52,24 @@ class LogControlPanel : JPanel() {
             addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
+                        val userHome = System.getProperty("user.home")
+
                         try {
-                            val userHome = System.getProperty("user.home")
+                            Logger.log("Open log dir action", SenderType.LOGGER)
+
                             val logDir = File("$userHome/.RemotePyCharm/logs")
 
-                            if (!logDir.exists()) {
-                                logDir.mkdirs()
-                            }
+                            if (!logDir.exists()) { logDir.mkdirs() }
 
                             val project = ProjectManager.getInstance().openProjects.firstOrNull()
+
                             if (project != null && !project.isDisposed) {
                                 RevealFileAction.openDirectory(logDir)
                             } else {
-                                Desktop.getDesktop().open(logDir)
-                            }
-
-                            // TODO logger log for this action
-
+                                Desktop.getDesktop().open(logDir) }
                         } catch (e: Exception) {
-                            // TODO logger log for this action
+                            Logger.log("Can not open log dir", SenderType.LOGGER, MessageType.WARNING)
 
-                            val userHome = System.getProperty("user.home")
                             val logPath = "$userHome/.RemotePyCharm/logs"
 
                             JOptionPane.showMessageDialog(
@@ -80,19 +79,13 @@ class LogControlPanel : JPanel() {
                                 JOptionPane.WARNING_MESSAGE
                             )
                         }
-
                     }
                 }
 
-                override fun mouseEntered(e: MouseEvent) {
-                    foreground = hoverColor
-                }
+                override fun mouseEntered(e: MouseEvent) { foreground = hoverColor }
 
-                override fun mouseExited(e: MouseEvent) {
-                    foreground = normalColor
-                }
+                override fun mouseExited(e: MouseEvent) { foreground = normalColor }
             })
-
         }
 
         add(clearLogBtn)
