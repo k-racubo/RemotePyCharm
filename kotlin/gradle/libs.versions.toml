@@ -24,7 +24,7 @@ kotlinxSerialization = "1.7.0"
 kotlinxCoroutines = "1.10.2"
 oldMaterialIcons = "1.7.7"
 
-mDNS = "1.0.4"
+mDNS = "3.6.3"
 
 [libraries]
 androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -51,9 +51,8 @@ kotlinxSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serial
 ktorSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinxCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 
+mDnsCore = { group = "org.jmdns", name = "jmdns", version.ref = "mDNS" }
 materialIconsOld = { group="androidx.compose.material" , name ="material-icons-core", version.ref = "oldMaterialIcons"}
-mDnsCore = { group = "com.appstractive", name = "dns-sd-kt", version.ref = "mDNS" }
-
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
