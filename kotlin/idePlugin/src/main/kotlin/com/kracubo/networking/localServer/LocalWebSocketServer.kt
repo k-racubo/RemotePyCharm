@@ -42,7 +42,7 @@ object LocalWebSocketServer {
         startHealthMonitor()
     }
 
-    suspend fun start(port: Int): Boolean {
+    fun start(port: Int): Boolean {
         return try {
             server = embeddedServer(CIO, port = port) {
                 install(WebSockets) {
@@ -94,7 +94,7 @@ object LocalWebSocketServer {
         }
     }
 
-    suspend fun stop() {
+    fun stop() {
         server?.stop(1000, 5000)
 
         isServerStarted = false
