@@ -14,20 +14,42 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
     var searchState by mutableStateOf<SearchState>(SearchState.HOLD)
     private var searchJob: Job? = null
     private val appContext get() = getApplication<Application>().applicationContext
+
+    private var nsdHelper: NsdHelper? = null
+
     fun startSearch() {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             searchState = SearchState.SEARCHING
-            val nsdHelper = NsdHelper(appContext)
-            nsdHelper.discoverServices()
+
+            nsdHelper = NsdHelper(appContext).apply {
+                listener = object : NsdHelper.DiscoveryListener {
+                    override fun onServiceFound() {
+                        viewModelScope.launch {
+                            searchState = SearchState.FOUND
+                        }
+                    }
+
+                    override fun onError() {
+                        viewModelScope.launch {
+                            searchState = SearchState.ERROR
+                        }
+                    }
+                }
+            }
+            nsdHelper?.discoverServices()
         }
     }
-    fun stopSearch(){
+
+    fun stopSearch() {
         searchJob?.cancel()
         searchState = SearchState.HOLD
+        nsdHelper = null
     }
-    fun errorSearch(){
+
+    fun errorSearch() {
         searchJob?.cancel()
         searchState = SearchState.ERROR
     }
 }
+
