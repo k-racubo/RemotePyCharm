@@ -1,5 +1,6 @@
 package com.kracubo.app.ui.screens.mainmenu
 
+import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,7 +61,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     )
                 }
                 SearchState.FOUND -> {
-
+                    Text("local server was found")
                 }
                 SearchState.SEARCHING ->{
                     Text(text = "Поиск Сервера...")
