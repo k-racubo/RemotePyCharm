@@ -25,6 +25,8 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
             nsdHelper = NsdHelper(appContext).apply {
                 listener = object : NsdHelper.DiscoveryListener {
                     override fun onServiceFound() {
+                        searchJob?.cancel()  //  <---
+                        nsdHelper = null     //  <---
                         viewModelScope.launch {
                             searchState = SearchState.FOUND
                         }
@@ -32,7 +34,7 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
 
                     override fun onError() {
                         viewModelScope.launch {
-                            searchState = SearchState.ERROR
+                            errorSearch() // <---
                         }
                     }
                 }
@@ -50,6 +52,7 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
     fun errorSearch() {
         searchJob?.cancel()
         searchState = SearchState.ERROR
+        nsdHelper = null // <---
     }
 }
 

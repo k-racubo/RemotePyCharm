@@ -88,13 +88,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 }
             }
             Button(
-                onClick = {
-                    if(viewModel.searchState == SearchState.HOLD){
-                        exitToMainScreen()
-                    }else{
-                        viewModel.searchState = SearchState.HOLD
-                    }
-                },
+                onClick = { viewModel.stopSearch()},
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {
                 Text(text = "Назад")
