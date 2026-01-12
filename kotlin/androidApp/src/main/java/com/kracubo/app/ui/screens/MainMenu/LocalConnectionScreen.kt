@@ -1,6 +1,5 @@
 package com.kracubo.app.ui.screens.mainmenu
 
-import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -88,7 +87,12 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 }
             }
             Button(
-                onClick = { viewModel.stopSearch()},
+                onClick = {
+                    if(viewModel.searchState == SearchState.HOLD){
+                        exitToMainScreen()
+                    }
+                    viewModel.stopSearch()
+                          },
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {
                 Text(text = "Назад")
