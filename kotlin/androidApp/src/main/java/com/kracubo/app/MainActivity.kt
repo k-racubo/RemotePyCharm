@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kracubo.app.ui.screens.codeeditor.CodeEditorScreen
 import com.kracubo.app.ui.screens.mainmenu.LocalConnectionScreen
 import com.kracubo.app.ui.screens.mainmenu.MainScreen
 import com.kracubo.app.ui.screens.mainmenu.RemoteScreen
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
         setContent {
-            AppTheme(darkTheme = true){
+            AppTheme(darkTheme = true) {
                 Surface(Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "splash") {
@@ -33,30 +34,39 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("main") {
                             MainScreen(
-                                OnLocalScreen = { navController.navigate("LocalScreen")},
-                                OnRemoteScreen = {navController.navigate("RemoteScreen") }
+                                OnLocalScreen = { navController.navigate("LocalScreen") },
+                                OnRemoteScreen = { navController.navigate("RemoteScreen") },
+                                OnCodeEditor = { navController.navigate("CodeEditor") }
                             )
                         }
                         composable("RemoteScreen") {
                             RemoteScreen(
                                 Connection = {},
                                 Exit = {
-                                    navController.navigate("main"){
-                                        popUpTo("RemoteScreen"){
+                                    navController.navigate("main") {
+                                        popUpTo("RemoteScreen") {
                                             inclusive = true
                                         }
                                     }
                                 }
                             )
                         }
-                        composable("LocalScreen"){
+                        composable("LocalScreen") {
                             LocalConnectionScreen(exitToMainScreen = {
-                                navController.navigate("main"){
-                                    popUpTo("LocalScreen"){
+                                navController.navigate("main") {
+                                    popUpTo("LocalScreen") {
                                         inclusive = true
                                     }
                                 }
                             })
+                        }
+                        composable("CodeEditor") {
+                            CodeEditorScreen(
+                                fileName = "MainActivity.kt",
+                                onBack = {
+                                    navController.popBackStack()
+                                }
+                            )
                         }
                     }
                 }
