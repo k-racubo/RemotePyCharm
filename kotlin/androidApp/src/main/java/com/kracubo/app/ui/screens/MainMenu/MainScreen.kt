@@ -15,7 +15,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(OnLocalScreen: () -> Unit,
-               OnRemoteScreen: () -> Unit) {
+               OnRemoteScreen: () -> Unit,
+               OnCodeEditor: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,6 +43,12 @@ fun MainScreen(OnLocalScreen: () -> Unit,
             ) {
                 Text("Удаленное подключение")
             }
+            //Button(
+            //    onClick = { OnCodeEditor() },
+            //    modifier = Modifier.padding(top = 16.dp)      <== ТУТ КНОПКА В РЕДАКТОР КОДА, ТЕСТ БУДЕТ ПОЗЖЕ
+            //) {
+            //   Text("Редактор кода")
+            //}
         }
     }
 }
