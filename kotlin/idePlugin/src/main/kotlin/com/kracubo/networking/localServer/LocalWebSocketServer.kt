@@ -1,14 +1,22 @@
 package com.kracubo.networking.localServer
 
+import PluginServerInfo
+import com.intellij.build.BuildWorkspaceConfiguration
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.extensions.PluginId
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.SenderType
 import com.kracubo.events.localServer.ServerDownTopics
 import com.kracubo.events.localServer.UnexpectedServerDown
+import com.kracubo.networking.localServer.handlers.Handler
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
@@ -23,10 +31,12 @@ import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
 
 object LocalWebSocketServer {
-    private var port: Int? = null
+    var port: Int? = null
     private var server: EmbeddedServer<*, *>? = null
 
     private var isServerStarted: Boolean = false
+
+    private var handler: Handler = Handler()
 
     init {
         startHealthMonitor()
@@ -38,6 +48,10 @@ object LocalWebSocketServer {
                 install(WebSockets) {
                     pingPeriod = 15.seconds
                     timeout = 30.seconds
+                }
+
+                install(ContentNegotiation) {
+                    json()
                 }
 
                 routing {
@@ -56,6 +70,8 @@ object LocalWebSocketServer {
                     }
 
                     get("/crash") {
+                        call.respond("server down")
+                        UdpListener.stop()
                         server?.stop(0, 0)
                     }
                 }
@@ -66,8 +82,14 @@ object LocalWebSocketServer {
             this.port = port
             isServerStarted = true
 
+            val pluginId = PluginId.getId("com.kracubo.remotepycharm")
+            val pluginVersion = PluginManagerCore.getPlugin(pluginId)?.version ?: "1.0.0"
+
+            UdpListener.createMdnsService(port, pluginVersion)
+
             true
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            println(e)
             false
         }
     }
@@ -78,6 +100,8 @@ object LocalWebSocketServer {
         isServerStarted = false
         port = null
         server = null
+
+        UdpListener.stop()
 
         Logger.log("Local server stopped", senderType = SenderType.LOCAL_SERVER)
     }
