@@ -1,11 +1,10 @@
 package com.kracubo.networking.localServer
 
-import PluginServerInfo
-import com.intellij.build.BuildWorkspaceConfiguration
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.extensions.PluginId
 import com.kracubo.controlPanel.logger.Logger
+import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
 import com.kracubo.events.localServer.ServerDownTopics
 import com.kracubo.events.localServer.UnexpectedServerDown
@@ -16,6 +15,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.host
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
@@ -23,8 +23,13 @@ import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
 import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
+import io.ktor.websocket.WebSocketSession
+import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import io.ktor.websocket.send
+import kotlinx.coroutines.channels.consumeEach
 import java.net.InetSocketAddress
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -33,6 +38,8 @@ import kotlin.time.Duration.Companion.seconds
 object LocalWebSocketServer {
     var port: Int? = null
     private var server: EmbeddedServer<*, *>? = null
+
+    private var currentSession: WebSocketSession? = null
 
     private var isServerStarted: Boolean = false
 
@@ -50,24 +57,10 @@ object LocalWebSocketServer {
                     timeout = 30.seconds
                 }
 
-                install(ContentNegotiation) {
-                    json()
-                }
+                install(ContentNegotiation) { json() }
 
                 routing {
-                    webSocket("/ws") {
-                        for (frame in incoming) {
-                            when (frame) {
-                                is Frame.Text -> {
-                                    val message = frame.readText()
-
-                                }
-
-                                else -> {}
-                            }
-                        }
-                        // TODO logic for disconnect
-                    }
+                    webSocket("/ws") { handleConnection(this, call.request.host()) }
 
                     get("/crash") {
                         call.respond("server down")
@@ -136,5 +129,35 @@ object LocalWebSocketServer {
         } catch (_: Exception) {
             false
         }
+    }
+
+    private suspend fun handleConnection(session: WebSocketSession, hostAddress: String) {
+
+        if (currentSession != null) {
+            session.close(
+                CloseReason(
+                    CloseReason.Codes.TRY_AGAIN_LATER,
+                    "Only one connection allowed"))
+
+            Logger.log("host: $hostAddress trying connect to server but socket busy another connection",
+                SenderType.LOCAL_SERVER, MessageType.WARNING)
+            return
+        }
+
+        currentSession = session
+
+        Logger.log("New connection: $hostAddress", SenderType.LOCAL_SERVER)
+
+        session.incoming.consumeEach { frame ->
+            if (frame is Frame.Text) {
+                val text = frame.readText()
+
+                val response = handler.resolve(text)
+                session.send(handler.json.encodeToString(response))
+            }
+        }
+
+        currentSession = null
+        Logger.log("Connection closed: $hostAddress", SenderType.LOCAL_SERVER)
     }
 }
