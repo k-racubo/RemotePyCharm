@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("PROJECTS_LIST")
+@SerialName("PROJECTS_LIST_RESPONSE")
 data class ProjectsListResponse(
     override val requestId: String,
     override val success: Boolean = true,
