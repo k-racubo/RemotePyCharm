@@ -8,7 +8,9 @@ import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
 import com.kracubo.events.localServer.ServerDownTopics
 import com.kracubo.events.localServer.UnexpectedServerDown
+import com.kracubo.extensions.prettyJson
 import com.kracubo.networking.localServer.handlers.Handler
+import core.ApiJson
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -30,6 +32,7 @@ import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.isActive
 import java.net.InetSocketAddress
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -93,6 +96,7 @@ object LocalWebSocketServer {
         isServerStarted = false
         port = null
         server = null
+        currentSession = null
 
         UdpListener.stop()
 
@@ -133,7 +137,7 @@ object LocalWebSocketServer {
 
     private suspend fun handleConnection(session: WebSocketSession, hostAddress: String) {
 
-        if (currentSession != null) {
+        if (currentSession != null && currentSession?.isActive == true) {
             session.close(
                 CloseReason(
                     CloseReason.Codes.TRY_AGAIN_LATER,
@@ -148,16 +152,31 @@ object LocalWebSocketServer {
 
         Logger.log("New connection: $hostAddress", SenderType.LOCAL_SERVER)
 
-        session.incoming.consumeEach { frame ->
-            if (frame is Frame.Text) {
-                val text = frame.readText()
+        try {
+            session.incoming.consumeEach { frame ->
+                if (frame is Frame.Text) {
+                    val text = frame.readText()
 
-                val response = handler.resolve(text)
-                session.send(handler.json.encodeToString(response))
+                    Logger.log("Packet received from $hostAddress:\n${text.prettyJson()}",
+                        SenderType.LOCAL_SERVER)
+
+                    try {
+                        val response = handler.resolve(text)
+
+                        val responseString = ApiJson.instance.encodeToString(response)
+                        session.send(responseString)
+
+                        Logger.log("Packet sent to $hostAddress:\n${responseString.prettyJson()}",
+                            SenderType.LOCAL_SERVER)
+                    } catch (e: Exception) {
+                        Logger.log("Error with resolving incoming data: $e", SenderType.LOCAL_SERVER,
+                            MessageType.ERROR)
+                    }
+                }
             }
+        } finally {
+            currentSession = null
+            Logger.log("Connection closed: $hostAddress", SenderType.LOCAL_SERVER)
         }
-
-        currentSession = null
-        Logger.log("Connection closed: $hostAddress", SenderType.LOCAL_SERVER)
     }
 }
