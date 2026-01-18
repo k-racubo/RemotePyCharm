@@ -1,54 +1,90 @@
 package com.kracubo.app.ui.screens.mainmenu
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
-fun MainScreen(OnLocalScreen: () -> Unit,
-               OnRemoteScreen: () -> Unit,
-               OnCodeEditor: () -> Unit = {}) {
-    Box(
+fun MainScreen(onLocalScreen: () -> Unit,
+               onRemoteScreen: () -> Unit) {
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top)
     ) {
+        Spacer(modifier = Modifier.height(40.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
+            Text(
+                text = "Remote PyCharm",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+        Spacer(modifier = Modifier.height(70.dp))
+        Text(
+            text = "Choose a connection type",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f)
+        )
+        OutlinedButton(
+            onClick = { onLocalScreen() },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            ),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        ) {
+            Text(text = "Локальное подключение")
+        }
+        OutlinedButton(
+            onClick = { onRemoteScreen() },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            ),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        ) {
+            Text(text = "Удалённое подключение")
+        }
+        Spacer(modifier = Modifier.weight(1f))
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Выберите способ подключения",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
+                text = "Contact support",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                modifier = Modifier.clickable(onClick = {})
             )
-            Button(
-                onClick = { OnLocalScreen() },
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                Text("Локальное подключение")
-            }
-            Button(
-                onClick = { OnRemoteScreen() }
-            ) {
-                Text("Удаленное подключение")
-            }
-            //Button(
-            //    onClick = { OnCodeEditor() },
-            //    modifier = Modifier.padding(top = 16.dp)      <== ТУТ КНОПКА В РЕДАКТОР КОДА, ТЕСТ БУДЕТ ПОЗЖЕ
-            //) {
-            //   Text("Редактор кода")
-            //}
+            Text(
+                text = "v1.0.12",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+            )
         }
     }
 }
