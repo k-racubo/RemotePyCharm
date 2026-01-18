@@ -1,17 +1,24 @@
 package com.kracubo.app.ui.screens.mainmenu
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -19,7 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(onLocalScreen: () -> Unit,
@@ -88,3 +98,23 @@ fun MainScreen(onLocalScreen: () -> Unit,
         }
     }
 }
+@Preview
+@Composable
+fun ScrollableLicenseText() {
+    val scrollState = rememberScrollState()
+    Box(
+        modifier = Modifier
+            .size(width = 300.dp, height = 200.dp)  // Задайте нужный размер
+            .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(8.dp))
+            .verticalScroll(scrollState)
+            .padding(12.dp)
+    ) {
+        Text(
+            text = "licenseText",
+            color = MaterialTheme.colorScheme.background,
+            style = TextStyle(lineHeight = 18.sp)
+        )
+
+    }
+}
+
