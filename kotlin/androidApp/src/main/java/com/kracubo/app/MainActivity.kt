@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("main") {
                             MainScreen(
-                                OnLocalScreen = { navController.navigate("LocalScreen")},
-                                OnRemoteScreen = {navController.navigate("RemoteScreen") }
+                                onLocalScreen = { navController.navigate("LocalScreen")},
+                                onRemoteScreen = {navController.navigate("RemoteScreen") }
                             )
                         }
                         composable("RemoteScreen") {
