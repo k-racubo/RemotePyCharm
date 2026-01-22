@@ -2,6 +2,7 @@ package com.kracubo.app.ui.screens.mainmenu
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -101,6 +102,9 @@ fun MainScreen(onLocalScreen: () -> Unit,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                 modifier = Modifier.clickable(onClick = {
+                    //test hash reset function
+                    preferences.edit { remove("is_first_run").apply()}
+                    Toast.makeText(context,"hash reset", Toast.LENGTH_LONG).show()
                 })
             )
             Text(
