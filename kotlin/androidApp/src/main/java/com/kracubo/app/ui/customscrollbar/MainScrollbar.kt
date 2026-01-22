@@ -37,7 +37,7 @@ fun scrollbar() {
                     rememberScrollState(),
                     rememberScrollbarState(),
                     scrollbarConfig = ScrollbarConfig(
-                        padding = PaddingValues(end = 10.dp, top = 10.dp, bottom = 10.dp),
+                        padding = PaddingValues(end = 12.dp, top = 5.dp, bottom = 5.dp),
                         indicatorColor = ColorType.Solid(MaterialTheme.colorScheme.onSecondaryContainer),
                         indicatorThickness = 16.dp,
                         barThickness = 0.dp,
