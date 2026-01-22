@@ -1,5 +1,7 @@
 package com.kracubo.app.ui.screens.mainmenu
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,14 +20,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.kracubo.app.ui.customscrollbar.scrollbar
+import androidx.core.content.edit
 
 @Composable
 fun MainScreen(onLocalScreen: () -> Unit,
                onRemoteScreen: () -> Unit) {
+    val context = LocalContext.current
+    val preferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    val isFirstRun = preferences.getBoolean("is_first_run", true)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,14 +51,19 @@ fun MainScreen(onLocalScreen: () -> Unit,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp)
-                .padding(vertical = 24.dp)
-        ) {
-            scrollbar()
-        }
+        if(isFirstRun){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+                    .padding(vertical = 24.dp)
+            ) {
+                scrollbar()
+                LaunchedEffect(Unit) {
+                    preferences.edit { putBoolean("is_first_run", false) }
+                }
+            }
+        }else{ Spacer(Modifier.height(100.dp))}
         Text(
             text = "Choose a connection type",
             style = MaterialTheme.typography.bodyLarge,
@@ -87,7 +100,8 @@ fun MainScreen(onLocalScreen: () -> Unit,
                 text = "Contact support",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                modifier = Modifier.clickable(onClick = {})
+                modifier = Modifier.clickable(onClick = {
+                })
             )
             Text(
                 text = "v1.0.12",
