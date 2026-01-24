@@ -59,11 +59,5 @@ dependencies {
     implementation(libs.activityKtx)
     implementation(libs.materialIconsOld)
 
-    val cameraVersion = "1.3.1"
-    implementation("androidx.camera:camera-core:${cameraVersion}")
-    implementation("androidx.camera:camera-camera2:${cameraVersion}")
-    implementation("androidx.camera:camera-lifecycle:${cameraVersion}")
-    implementation("androidx.camera:camera-view:${cameraVersion}")
-
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
 }
