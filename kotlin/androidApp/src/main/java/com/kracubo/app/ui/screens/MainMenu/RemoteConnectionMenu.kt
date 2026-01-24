@@ -2,7 +2,6 @@ package com.kracubo.app.ui.screens.MainMenu
 
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,6 @@ import com.kracubo.app.ui.theme.ButtonTextColor
 import com.kracubo.app.ui.theme.InputBorderColor
 import com.kracubo.app.ui.theme.LabelColor
 import com.kracubo.app.ui.theme.TextColor
-import com.kracubo.app.ui.theme.background
 
 @Composable
 fun RemoteScreen(
@@ -55,7 +53,6 @@ fun RemoteScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(background)
     ) {
 
         IconButton(
