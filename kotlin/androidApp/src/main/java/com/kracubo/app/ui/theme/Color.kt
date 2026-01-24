@@ -16,7 +16,7 @@ val onTertiary = Color(0xFF2E1500)
 val background = Color(0xFF2B2B2B)
 val onBackground = Color(0xFFDADADA)
 
-val surface = Color(0xFF373A3C)
+val surface = Color(0xFF2B2B2B)
 val onSurface = Color(0xFFD0D0D0)
 
 val error = Color(0xFFEF5350)
