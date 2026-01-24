@@ -43,7 +43,12 @@ dependencies {
     implementation(libs.androidxCore)
     implementation(libs.androidxLifecycle)
     implementation(libs.androidxActivity)
-
+    //libs for camera and qrcode
+    val cameraVersion = "1.3.1"
+    implementation("androidx.camera:camera-core:$cameraVersion")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
     implementation(platform(libs.androidxComposeBom))
 
     implementation(libs.androidxComposeUi)
