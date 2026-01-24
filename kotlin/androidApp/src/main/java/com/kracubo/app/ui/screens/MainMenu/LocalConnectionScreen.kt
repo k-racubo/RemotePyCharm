@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,20 +40,37 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
     val viewModel: LocalServerSearchScreenViewModel = viewModel()
 
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        IconButton(
+            onClick = {
+                if (viewModel.searchState == SearchState.HOLD) {
+                    exitToMainScreen()
+                }
+                viewModel.stopSearch()
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Назад",
+                modifier = Modifier.size(30.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "Подключение в локальной сети",
                 fontSize = 20.sp,
             )
-            when(viewModel.searchState){
+            when (viewModel.searchState) {
                 SearchState.ERROR -> {
                     Text(text = "Сервер не найден")
                     Icon(
@@ -62,7 +83,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 SearchState.FOUND -> {
                     Text("local server was found")
                 }
-                SearchState.SEARCHING ->{
+                SearchState.SEARCHING -> {
                     Text(text = "Поиск Сервера...")
                     CircularProgressIndicator(
                         modifier = Modifier.size(64.dp),
@@ -73,31 +94,22 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },
-                        label = { Text( text = "Порт")} ,
-                        modifier = Modifier.fillMaxWidth(0.75f)
+                        label = { Text(text = "Порт") },
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
                             .graphicsLayer { clip = true },
                         interactionSource = remember { MutableInteractionSource() }
                     )
                     Button(
-                        onClick = { viewModel.startSearch()},
+                        onClick = { viewModel.startSearch() },
                         modifier = Modifier.fillMaxWidth(0.75f)
                     ) {
                         Text(text = "Подключение")
                     }
                 }
             }
-            Button(
-                onClick = {
-                    if(viewModel.searchState == SearchState.HOLD){
-                        exitToMainScreen()
-                    }
-                    viewModel.stopSearch()
-                          },
-                modifier = Modifier.fillMaxWidth(0.75f)
-            ) {
-                Text(text = "Назад")
-            }
         }
     }
+
 }
 
