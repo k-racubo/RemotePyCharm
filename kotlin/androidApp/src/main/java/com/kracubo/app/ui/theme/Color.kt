@@ -13,7 +13,7 @@ val onSecondaryContainer = Color(0xFFC9D9FF)
 val tertiary = Color(0xFFFF9C00)
 val onTertiary = Color(0xFF2E1500)
 
-val background = Color(0xFF2B2B2B)
+val background = Color(0xFF2B2D31)
 val onBackground = Color(0xFFDADADA)
 
 val surface = Color(0xFF2B2B2B)
@@ -21,3 +21,13 @@ val onSurface = Color(0xFFD0D0D0)
 
 val error = Color(0xFFEF5350)
 val onError = Color(0xFFFFFFFF)
+
+val InputBorderColor = Color(0xFFE0E0E0)
+
+val TextColor = Color(0xFFE0E0E0)
+
+val LabelColor = Color(0xFF808080)
+
+val ButtonBorderColor = Color(0xFF5A79BA)
+
+val ButtonTextColor = Color(0xFF5A79BA)
