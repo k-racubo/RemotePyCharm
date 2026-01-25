@@ -43,6 +43,9 @@ dependencies {
     implementation(libs.androidxCore)
     implementation(libs.androidxLifecycle)
     implementation(libs.androidxActivity)
+    //jetbrains font
+    implementation("androidx.compose.ui:ui:1.4.0")
+    implementation("androidx.compose.material3:material3:1.0.0")
     //libs for camera and qrcode
     val cameraVersion = "1.3.1"
     implementation("androidx.camera:camera-core:$cameraVersion")
