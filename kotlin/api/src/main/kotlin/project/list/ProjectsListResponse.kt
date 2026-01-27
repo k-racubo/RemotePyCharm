@@ -1,4 +1,4 @@
-package project
+package project.list
 
 import core.Response
 import kotlinx.serialization.SerialName
