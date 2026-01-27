@@ -1,4 +1,4 @@
-package project
+package project.list
 
 import kotlinx.serialization.Serializable
 
