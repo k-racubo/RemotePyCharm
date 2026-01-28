@@ -31,8 +31,8 @@ import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.isActive
+import kotlinx.serialization.json.JsonObject
 import java.net.InetSocketAddress
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -44,9 +44,9 @@ object LocalWebSocketServer {
 
     private var currentSession: WebSocketSession? = null
 
-    private var isServerStarted: Boolean = false
+    var isServerStarted: Boolean = false
 
-    private var handler: Handler = Handler()
+    private val handler: Handler by lazy { Handler() }
 
     init {
         startHealthMonitor()
@@ -153,25 +153,44 @@ object LocalWebSocketServer {
         Logger.log("New connection: $hostAddress", SenderType.LOCAL_SERVER)
 
         try {
-            session.incoming.consumeEach { frame ->
+            for (frame in session.incoming) {
                 if (frame is Frame.Text) {
                     val text = frame.readText()
 
-                    Logger.log("Packet received from $hostAddress:\n${text.prettyJson()}",
-                        SenderType.LOCAL_SERVER)
+                    Logger.log(
+                        "Packet received from $hostAddress:\n${text.prettyJson()}",
+                        SenderType.LOCAL_SERVER
+                    )
 
-                    try {
-                        val response = handler.resolve(text)
-
-                        val responseString = ApiJson.instance.encodeToString(response)
-                        session.send(responseString)
-
-                        Logger.log("Packet sent to $hostAddress:\n${responseString.prettyJson()}",
-                            SenderType.LOCAL_SERVER)
+                    val jsonElement = try {
+                        ApiJson.instance.parseToJsonElement(text)
                     } catch (e: Exception) {
-                        Logger.log("Error with resolving incoming data: $e", SenderType.LOCAL_SERVER,
-                            MessageType.ERROR)
+                        Logger.log(
+                            "Invalid JSON: ${e.message}", SenderType.LOCAL_SERVER,
+                            MessageType.WARNING
+                        )
+                        null
                     }
+
+                    if (jsonElement == null) { continue }
+
+                    if (jsonElement !is JsonObject) {
+                        Logger.log(
+                            "Expected JSON object, got ${jsonElement::class.simpleName}",
+                            SenderType.LOCAL_SERVER, MessageType.WARNING
+                        )
+                        continue
+                    }
+
+                    val response = handler.resolve(text)
+
+                    val responseString = ApiJson.instance.encodeToString(response)
+                    session.send(responseString)
+
+                    Logger.log(
+                        "Packet sent to $hostAddress:\n${responseString.prettyJson()}",
+                        SenderType.LOCAL_SERVER
+                    )
                 }
             }
         } finally {
