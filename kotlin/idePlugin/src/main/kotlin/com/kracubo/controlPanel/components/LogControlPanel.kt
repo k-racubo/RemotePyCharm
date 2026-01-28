@@ -1,12 +1,14 @@
 package com.kracubo.controlPanel.components
 
 import com.intellij.ide.actions.RevealFileAction
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.events.logwindow.ClearLogWindowTopics
 import java.awt.Color
 import java.awt.Cursor
 import java.awt.Desktop
@@ -31,7 +33,11 @@ class LogControlPanel : JPanel() {
         clearLogBtn = JButton("Clear logs").apply {
             toolTipText = "Clear only displayed logs (log files remain unchanged)"
 
-            addActionListener { Logger.clearLogWindow() }
+            addActionListener {
+                ApplicationManager.getApplication().messageBus
+                    .syncPublisher(ClearLogWindowTopics.CLEAR_LOG)
+                    .onLogClear()
+            }
         }
 
         clickableText = JBLabel("Open logs directory").apply {
