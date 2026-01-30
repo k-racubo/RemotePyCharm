@@ -150,9 +150,26 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize().blur(10.dp)
                 ) {
-                    Text("awdwaddwa")
-                    Spacer(Modifier.height(100.dp))
-                    Text("awdwaddwa")
+                    OutlinedTextField(
+                        value = searchPort,
+                        onValueChange = { searchPort = it },
+                        label = { Text(text = "Порт") },
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .graphicsLayer { clip = true },
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                    OutlinedButton(
+                        onClick = { viewModel.startSearch() },
+                        modifier = Modifier.fillMaxWidth(0.75f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(text = "Подключение")
+                    }
                 }
                 IconButton(
                     onClick = {
