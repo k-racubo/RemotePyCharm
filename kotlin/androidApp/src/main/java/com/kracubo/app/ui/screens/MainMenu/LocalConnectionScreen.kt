@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +41,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
+import com.kracubo.app.ui.theme.ButtonBorderColor
+import com.kracubo.app.ui.theme.ButtonTextColor
+import com.kracubo.app.ui.theme.InputBorderColor
+import com.kracubo.app.ui.theme.LabelColor
+import com.kracubo.app.ui.theme.TextColor
 
 @Composable
 fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
@@ -118,20 +124,31 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },
-                        label = { Text(text = "Порт") },
-                        modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .graphicsLayer { clip = true },
-                        interactionSource = remember { MutableInteractionSource() }
+                        label = { Text("Server IP", color = LabelColor) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = InputBorderColor,
+                            unfocusedBorderColor = InputBorderColor,
+                            focusedTextColor = TextColor,
+                            unfocusedTextColor = TextColor,
+                            cursorColor = TextColor,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.75f),
                     )
+                    Spacer(Modifier.height(20.dp))
                     OutlinedButton(
                         onClick = { viewModel.startSearch() },
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, ButtonBorderColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = ButtonTextColor
+                        )
                     ) {
                         Text(text = "Подключение")
                     }
@@ -153,20 +170,31 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },
-                        label = { Text(text = "Порт") },
-                        modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .graphicsLayer { clip = true },
-                        interactionSource = remember { MutableInteractionSource() }
+                        label = { Text("Server IP", color = LabelColor) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = InputBorderColor,
+                            unfocusedBorderColor = InputBorderColor,
+                            focusedTextColor = TextColor,
+                            unfocusedTextColor = TextColor,
+                            cursorColor = TextColor,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.75f),
                     )
+                    Spacer(Modifier.height(20.dp))
                     OutlinedButton(
                         onClick = { viewModel.startSearch() },
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, ButtonBorderColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = ButtonTextColor
+                        )
                     ) {
                         Text(text = "Подключение")
                     }
