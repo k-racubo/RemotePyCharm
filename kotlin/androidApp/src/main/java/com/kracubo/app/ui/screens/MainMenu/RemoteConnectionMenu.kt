@@ -46,15 +46,10 @@ fun RemoteScreen(
     var serverIp by remember { mutableStateOf("") }
     var serverPort by remember { mutableStateOf("") }
     var authToken by remember { mutableStateOf("") }
-
-
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-
         IconButton(
             onClick = { Exit() },
             modifier = Modifier
@@ -67,7 +62,6 @@ fun RemoteScreen(
                 tint = ButtonBorderColor
             )
         }
-
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -82,8 +76,6 @@ fun RemoteScreen(
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
-
-
             OutlinedTextField(
                 value = serverIp,
                 onValueChange = { serverIp = it },
@@ -98,10 +90,8 @@ fun RemoteScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent
                 ),
-                modifier = Modifier.fillMaxWidth(0.85f)
+                modifier = Modifier.fillMaxWidth(0.75f)
             )
-
-
             OutlinedTextField(
                 value = serverPort,
                 onValueChange = { serverPort = it },
@@ -116,10 +106,8 @@ fun RemoteScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent
                 ),
-                modifier = Modifier.fillMaxWidth(0.85f)
+                modifier = Modifier.fillMaxWidth(0.75f)
             )
-
-
             OutlinedTextField(
                 value = authToken,
                 onValueChange = { authToken = it },
@@ -134,16 +122,13 @@ fun RemoteScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent
                 ),
-                modifier = Modifier.fillMaxWidth(0.85f)
+                modifier = Modifier.fillMaxWidth(0.75f)
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
-
             Button(
                 onClick = { Connection() },
                 modifier = Modifier
-                    .fillMaxWidth(0.85f)
+                    .fillMaxWidth(0.75f)
                     .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, ButtonBorderColor),
@@ -158,8 +143,6 @@ fun RemoteScreen(
                 )
             }
         }
-
-
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
