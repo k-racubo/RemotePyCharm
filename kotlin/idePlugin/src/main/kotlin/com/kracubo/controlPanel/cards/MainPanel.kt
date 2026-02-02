@@ -76,6 +76,15 @@ class MainPanel : JPanel(), Disposable {
             },
             onServerStateChanged = { state: Boolean ->
                 mainButtonsCard.remoteServerBtn.isEnabled = !state
+
+                if (remoteServerButtonsCard.isVisible && state) {
+                    SwingUtilities.invokeLater {
+                        mainButtonsCard.isVisible = true
+                        remoteServerButtonsCard.isVisible = false
+                        this@MainPanel.revalidate()
+                        this@MainPanel.repaint()
+                    }
+                }
             }
         )
 
@@ -92,6 +101,15 @@ class MainPanel : JPanel(), Disposable {
             },
             onServerStateChanged = { state ->
                 mainButtonsCard.localServerBtn.isEnabled = !state
+
+                if (localServerButtonsCard.isVisible && state) {
+                    SwingUtilities.invokeLater {
+                        mainButtonsCard.isVisible = true
+                        localServerButtonsCard.isVisible = false
+                        this@MainPanel.revalidate()
+                        this@MainPanel.repaint()
+                    }
+                }
             }
         )
 
@@ -110,7 +128,7 @@ class MainPanel : JPanel(), Disposable {
 
         subscribeToServerEvents()
 
-        localServerButtonsCard.isLocalServerStarted = LocalWebSocketServer.isServerStarted
+        localServerButtonsCard.isLocalServerStarted = LocalWebSocketServer.getInstance().isServerStarted
     }
 
     private fun subscribeToServerEvents() {
