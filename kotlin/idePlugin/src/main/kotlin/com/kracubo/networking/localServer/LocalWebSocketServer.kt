@@ -65,6 +65,8 @@ class LocalWebSocketServer : Disposable {
                             .syncPublisher(ServerDownTopics.UNEXPECTED_SERVER_DOWN)
                             .onUnexpectedServerDown(UnexpectedServerDown(port = this@LocalWebSocketServer.port!!))
 
+                        UdpListener.stop()
+
                         isServerStarted = false
                         this@LocalWebSocketServer.port = null
                         server = null
