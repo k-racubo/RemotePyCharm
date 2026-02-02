@@ -30,6 +30,7 @@ object ApiJson {
                 subclass(ProjectsListResponse::class)
                 subclass(ProjectFileTreeResponse::class)
                 subclass(ResultOfRunResponse::class)
+                subclass(ErrorResponse::class)
             }
         }
     }
