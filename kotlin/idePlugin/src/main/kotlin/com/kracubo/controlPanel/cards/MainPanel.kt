@@ -9,9 +9,13 @@ import com.kracubo.controlPanel.components.LogWindow
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.events.localServer.IsServerStartedChangedListener
+import com.kracubo.events.localServer.IsServerStartedChangedTopics
 import com.kracubo.events.localServer.ServerDownListener
 import com.kracubo.events.localServer.ServerDownTopics
+import com.kracubo.events.localServer.ServerStartedState
 import com.kracubo.events.localServer.UnexpectedServerDown
+import com.kracubo.networking.localServer.LocalWebSocketServer
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -72,6 +76,15 @@ class MainPanel : JPanel(), Disposable {
             },
             onServerStateChanged = { state: Boolean ->
                 mainButtonsCard.remoteServerBtn.isEnabled = !state
+
+                if (remoteServerButtonsCard.isVisible && state) {
+                    SwingUtilities.invokeLater {
+                        mainButtonsCard.isVisible = true
+                        remoteServerButtonsCard.isVisible = false
+                        this@MainPanel.revalidate()
+                        this@MainPanel.repaint()
+                    }
+                }
             }
         )
 
@@ -88,6 +101,15 @@ class MainPanel : JPanel(), Disposable {
             },
             onServerStateChanged = { state ->
                 mainButtonsCard.localServerBtn.isEnabled = !state
+
+                if (localServerButtonsCard.isVisible && state) {
+                    SwingUtilities.invokeLater {
+                        mainButtonsCard.isVisible = true
+                        localServerButtonsCard.isVisible = false
+                        this@MainPanel.revalidate()
+                        this@MainPanel.repaint()
+                    }
+                }
             }
         )
 
@@ -105,6 +127,8 @@ class MainPanel : JPanel(), Disposable {
         add(logControlPanel)
 
         subscribeToServerEvents()
+
+        localServerButtonsCard.isLocalServerStarted = LocalWebSocketServer.getInstance().isServerStarted
     }
 
     private fun subscribeToServerEvents() {
@@ -112,6 +136,14 @@ class MainPanel : JPanel(), Disposable {
             .subscribe(ServerDownTopics.UNEXPECTED_SERVER_DOWN,
             object : ServerDownListener {
                 override fun onUnexpectedServerDown(event: UnexpectedServerDown) { handleServerCrashed(event) } })
+
+        ApplicationManager.getApplication().messageBus.connect(this)
+            .subscribe(IsServerStartedChangedTopics.SERVER_STATE_CHANGED,
+                object : IsServerStartedChangedListener {
+                    override fun onServerStateChanged(event: ServerStartedState) {
+                        localServerButtonsCard.isLocalServerStarted = event.newValue
+                    }
+                })
     }
 
     private fun handleServerCrashed(event: UnexpectedServerDown) {

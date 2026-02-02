@@ -13,7 +13,7 @@ class ControlPanel : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val mainPanel = MainPanel()
 
-        Logger.init(mainPanel.logWindow.logArea)
+        Logger.init()
 
         Logger.log("Logger initialized", SenderType.LOGGER)
 

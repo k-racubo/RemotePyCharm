@@ -1,5 +1,6 @@
 package com.kracubo.controlPanel.cards
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.util.ui.JBUI
 import com.kracubo.controlPanel.components.BackBtn
@@ -8,6 +9,8 @@ import com.kracubo.controlPanel.layout.DynamicGridLayout
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.events.localServer.IsServerStartedChangedTopics
+import com.kracubo.events.localServer.ServerStartedState
 import com.kracubo.networking.localServer.LocalWebSocketServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,11 +61,14 @@ class LocalServerButtonsCard(
                 Logger.log("\"Stop Server\" button action", SenderType.LOGGER)
 
                 pluginScope.launch {
-                    LocalWebSocketServer.stop()
-
                     withContext(Dispatchers.EDT) {
                         isLocalServerStarted = false
+
+                        ApplicationManager.getApplication().messageBus
+                            .syncPublisher(IsServerStartedChangedTopics.SERVER_STATE_CHANGED)
+                            .onServerStateChanged(ServerStartedState(false))
                     }
+                    LocalWebSocketServer.getInstance().stop()
                 }
             }
         }
@@ -81,7 +87,7 @@ class LocalServerButtonsCard(
                 Logger.log("\"Start Server\" button action", SenderType.LOGGER)
 
                 pluginScope.launch {
-                    val isStarted = LocalWebSocketServer.start(portField.portTextField.text.toInt())
+                    val isStarted = LocalWebSocketServer.getInstance().start(portField.portTextField.text.toInt())
 
                     withContext(Dispatchers.EDT) {
                         if (isStarted) {
@@ -93,6 +99,10 @@ class LocalServerButtonsCard(
                         }
 
                         isLocalServerStarted = isStarted
+
+                        ApplicationManager.getApplication().messageBus
+                            .syncPublisher(IsServerStartedChangedTopics.SERVER_STATE_CHANGED)
+                            .onServerStateChanged(ServerStartedState(isStarted))
                     }
                 }
             }

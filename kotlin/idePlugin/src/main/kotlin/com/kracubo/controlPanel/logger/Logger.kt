@@ -1,17 +1,16 @@
 package com.kracubo.controlPanel.logger
 
-import com.intellij.ui.components.JBTextArea
+import com.intellij.openapi.application.ApplicationManager
+import com.kracubo.events.logwindow.AppLogTopics
+import com.kracubo.events.logwindow.LogEntry
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executors
-import javax.swing.SwingUtilities
 
 object Logger {
-
-    private lateinit var logArea: JBTextArea
     private val timestampFormat = DateTimeFormatter.ofPattern("HH:mm:ss")
     private val logDir = Paths.get(
         System.getProperty("user.home"),
@@ -26,13 +25,8 @@ object Logger {
     private var logFile: File? = null
     private const val MAX_LOG_FILE_SIZE = 10 * 1024 * 1024
 
-
-
-    fun init(logArea: JBTextArea) {
-        Logger.logArea = logArea
-
+    fun init() {
         setupLogDirectory()
-
         logFile = getCurrentLogFile()
     }
 
@@ -88,13 +82,10 @@ object Logger {
         val timestamp = LocalDateTime.now().format(timestampFormat)
         val logMessage = "[$timestamp] $senderType: $message ($messageType)"
 
-        SwingUtilities.invokeLater {
-            logArea.append("$logMessage\n")
-            logArea.caretPosition = logArea.document.length
-        }
+        ApplicationManager.getApplication().messageBus
+            .syncPublisher(AppLogTopics.LOG_EVENT)
+            .onLogAdded(LogEntry(logMessage))
 
         logToFile("$logMessage\n")
     }
-
-    fun clearLogWindow() { SwingUtilities.invokeLater { logArea.text = "" } }
 }
