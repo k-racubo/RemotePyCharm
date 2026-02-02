@@ -1,6 +1,10 @@
 package com.kracubo.networking.localServer.handlers
 
-import com.kracubo.core.project.ProjectManager
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.components.service
+import com.kracubo.core.project.CoreProjectManager
+import com.kracubo.core.project.ProjectRunner
+import com.kracubo.core.project.ProjectStructureProvider
 import core.ApiJson
 import core.Command
 import core.ErrorResponse
@@ -16,40 +20,71 @@ import project.run.RunCurrentConfigCommand
 
 class Handler {
 
-    fun resolve(message: String): Response {
+    suspend fun resolve(message: String): Response {
+        val projectManager = CoreProjectManager.getInstance()
+
         return try {
             when (val apiMessage = ApiJson.instance.decodeFromString<Command>(message)) {
                 is GetProjectsList -> {
                     ProjectsListResponse(
                         apiMessage.requestId,
                         true,
-                        ProjectManager.getProjects(),
-                        ProjectManager.getCurrentProject()
+
+                        projectManager.getProjects(),
+                        projectManager.getCurrentProjectInfo()
                     )
                 }
                 is OpenProjectCommand -> {
-                    ProjectManager.openProject(apiMessage.projectName, apiMessage.projectPath)
-                    ProjectFileTreeResponse(
-                        apiMessage.requestId,
-                        true,
-                        mapOf("67" to "67")
-                    ) // just затычки
+                    projectManager.openProject(apiMessage.projectName, apiMessage.projectPath)
+
+                    projectManager.runWithProject(
+                        action = { project ->
+                            val tree = runReadAction { project.service<ProjectStructureProvider>().buildTree() }
+
+                            ProjectFileTreeResponse(
+                                requestId = apiMessage.requestId,
+                                success = true,
+                                fileTree = tree
+                            )
+                        },
+                        onError = {
+                            ErrorResponse(
+                                apiMessage.requestId,
+                                false,
+                                "OPEN_FAILED",
+                                "Project not found after opening"
+                            )
+                        })
                 }
                 is RunCurrentConfigCommand -> {
-                    ProjectManager.runCurrentConfig()
-                    ResultOfRunResponse(
-                        apiMessage.requestId,
-                        true,
-                        "ugu"
-                    ) // just затычки
+                    projectManager.runWithProject(
+                        action = {project ->
+                            val result = project.service<ProjectRunner>().runCurrentConfigAsync()
+
+                            ResultOfRunResponse(
+                                apiMessage.requestId,
+                                true,
+                                result
+                            )
+                        },
+                        onError = {
+                            ErrorResponse(
+                                apiMessage.requestId,
+                                false,
+                                "RUN_FAILED",
+                                "Open project before"
+                            )
+                        }
+                    )
                 }
+
                 else -> {
                     ErrorResponse(
-                        apiMessage.requestId,
-                        false,
-                        "1234",
-                        "Wtf with yr json go fuck man "
-                    ) // как может выполниться это условие?
+                        requestId = "unknown",
+                        success = false,
+                        errorCode = "UNKNOWN_COMMAND",
+                        errorMessage = "Command parsed but not handled in when block"
+                    ) // компилятор только не бей лучше схавай это, но не бей :(
                 }
             }
 
@@ -58,9 +93,7 @@ class Handler {
                 ApiJson.instance.parseToJsonElement(message)
                     .jsonObject["requestId"]?.jsonPrimitive?.content
                     ?: "unknown"
-            } catch (_: Exception) {
-                "unknown"
-            }
+            } catch (_: Exception) { "unknown" }
 
             ErrorResponse(
                 requestId,
