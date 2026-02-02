@@ -33,7 +33,7 @@ class NsdHelper(private val context: Context) {
                             val prefs = context.getSharedPreferences("local_search_prefs", Context.MODE_PRIVATE)
                             prefs.edit().apply {
                                 putString("LOCAL_SEARCH_IP", host)
-                                putInt("LOCAL_SEARCH_PORT", port ?: -1)
+                                putInt("LOCAL_SEARCH_PORT", port!!)
                                 apply()
                             }
                             Log.i("NsdHelper", "Host: $host Port: $port")
