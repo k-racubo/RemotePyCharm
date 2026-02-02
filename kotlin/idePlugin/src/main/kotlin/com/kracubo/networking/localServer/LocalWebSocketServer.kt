@@ -1,7 +1,10 @@
 package com.kracubo.networking.localServer
 
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.extensions.PluginId
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
@@ -12,6 +15,7 @@ import com.kracubo.extensions.prettyJson
 import com.kracubo.networking.localServer.handlers.Handler
 import core.ApiJson
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.cio.CIO
@@ -32,13 +36,17 @@ import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonObject
-import java.net.InetSocketAddress
-import java.net.Socket
-import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
 
-object LocalWebSocketServer {
+@Service(Service.Level.APP)
+class LocalWebSocketServer : Disposable {
+
+    companion object { fun getInstance() = service<LocalWebSocketServer>() }
+
     var port: Int? = null
     private var server: EmbeddedServer<*, *>? = null
 
@@ -48,13 +56,21 @@ object LocalWebSocketServer {
 
     private val handler: Handler by lazy { Handler() }
 
-    init {
-        startHealthMonitor()
-    }
-
     fun start(port: Int): Boolean {
         return try {
             server = embeddedServer(CIO, port = port) {
+                monitor.subscribe(ApplicationStopped) {
+                    if (isServerStarted) {
+                        ApplicationManager.getApplication().messageBus
+                            .syncPublisher(ServerDownTopics.UNEXPECTED_SERVER_DOWN)
+                            .onUnexpectedServerDown(UnexpectedServerDown(port = this@LocalWebSocketServer.port!!))
+
+                        isServerStarted = false
+                        this@LocalWebSocketServer.port = null
+                        server = null
+                    }
+                }
+
                 install(WebSockets) {
                     pingPeriod = 15.seconds
                     timeout = 30.seconds
@@ -91,9 +107,9 @@ object LocalWebSocketServer {
     }
 
     fun stop() {
+        isServerStarted = false // first for unexpected server down if condition
         server?.stop(1000, 5000)
 
-        isServerStarted = false
         port = null
         server = null
         currentSession = null
@@ -101,38 +117,6 @@ object LocalWebSocketServer {
         UdpListener.stop()
 
         Logger.log("Local server stopped", senderType = SenderType.LOCAL_SERVER)
-    }
-
-    private fun startHealthMonitor() {
-        thread(isDaemon = true) {
-            while (true) {
-                Thread.sleep(10000)
-
-                if (isServerStarted) {
-                    if (!isServerAlive()) {
-                        ApplicationManager.getApplication().messageBus
-                            .syncPublisher(ServerDownTopics.UNEXPECTED_SERVER_DOWN)
-                            .onUnexpectedServerDown(UnexpectedServerDown(port = port!!))
-
-                        isServerStarted = false
-                        port = null
-                        server = null
-                    }
-                }
-            }
-        }
-    }
-
-    private fun isServerAlive(): Boolean {
-        return try {
-            Socket().use { socket ->
-                socket.connect(InetSocketAddress("localhost", port ?: return false),
-                    1000)
-                true
-            }
-        } catch (_: Exception) {
-            false
-        }
     }
 
     private suspend fun handleConnection(session: WebSocketSession, hostAddress: String) {
@@ -182,20 +166,30 @@ object LocalWebSocketServer {
                         continue
                     }
 
-                    val response = handler.resolve(text)
+                    session.launch {
+                        val response = handler.resolve(text)
 
-                    val responseString = ApiJson.instance.encodeToString(response)
-                    session.send(responseString)
+                        val responseString = ApiJson.instance.encodeToString(response)
 
-                    Logger.log(
-                        "Packet sent to $hostAddress:\n${responseString.prettyJson()}",
-                        SenderType.LOCAL_SERVER
-                    )
+                        val sendMutex = Mutex()
+
+                        sendMutex.withLock { session.send(responseString) }
+
+                        Logger.log(
+                            "Packet sent to $hostAddress:\n${responseString.prettyJson()}",
+                            SenderType.LOCAL_SERVER
+                        )
+                    }
                 }
             }
         } finally {
             currentSession = null
             Logger.log("Connection closed: $hostAddress", SenderType.LOCAL_SERVER)
         }
+    }
+
+    override fun dispose() {
+        UdpListener.stop()
+        stop()
     }
 }
