@@ -61,8 +61,6 @@ class LocalServerButtonsCard(
                 Logger.log("\"Stop Server\" button action", SenderType.LOGGER)
 
                 pluginScope.launch {
-                    LocalWebSocketServer.stop()
-
                     withContext(Dispatchers.EDT) {
                         isLocalServerStarted = false
 
@@ -70,6 +68,7 @@ class LocalServerButtonsCard(
                             .syncPublisher(IsServerStartedChangedTopics.SERVER_STATE_CHANGED)
                             .onServerStateChanged(ServerStartedState(false))
                     }
+                    LocalWebSocketServer.getInstance().stop()
                 }
             }
         }
@@ -88,7 +87,7 @@ class LocalServerButtonsCard(
                 Logger.log("\"Start Server\" button action", SenderType.LOGGER)
 
                 pluginScope.launch {
-                    val isStarted = LocalWebSocketServer.start(portField.portTextField.text.toInt())
+                    val isStarted = LocalWebSocketServer.getInstance().start(portField.portTextField.text.toInt())
 
                     withContext(Dispatchers.EDT) {
                         if (isStarted) {
