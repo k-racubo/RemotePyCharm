@@ -3,7 +3,6 @@ package com.kracubo.app.ui.screens.mainmenu
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -28,7 +25,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,37 +56,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
             Toast.makeText(context,"Connection failed", Toast.LENGTH_LONG).show()
         }
         SearchState.FOUND -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                IconButton(
-                    onClick = {
-                        exitToMainScreen()
-                        viewModel.stopSearch()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Назад",
-                        modifier = Modifier.size(30.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Подключение в локальной сети",
-                        fontSize = 20.sp,
-                    )
-                    Text("local server was found")
-                }
-            }
+            TODO()
         }
         SearchState.QR_SEARCHING -> {
 
@@ -108,10 +73,14 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize().blur(10.dp)
                 ) {
+                    Text(text = "Local Connection",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(16.dp))
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },
-                        label = { Text("Server IP", color = LabelColor) },
+                        label = { Text("Port", color = LabelColor) },
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = InputBorderColor,
@@ -137,12 +106,13 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                             contentColor = ButtonTextColor
                         )
                     ) {
-                        Text(text = "Подключение")
+                        Text(text = "Establish connection",
+                            style = MaterialTheme.typography.titleLarge)
                     }
                 }
                 IconButton(
                     onClick = {
-                        exitToMainScreen()
+                        viewModel.searchState = SearchState.FULL_SEARCHING_HOLD
                         viewModel.stopSearch()
                     },
                     modifier = Modifier
@@ -188,10 +158,14 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    Text(text = "Local Connection",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(16.dp))
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },
-                        label = { Text("Server IP", color = LabelColor) },
+                        label = { Text("Port", color = LabelColor) },
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = InputBorderColor,
@@ -206,7 +180,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     )
                     Spacer(Modifier.height(20.dp))
                     OutlinedButton(
-                        onClick = { viewModel.startSearch() },
+                        onClick = { viewModel.startFullSearch() },
                         modifier = Modifier
                             .fillMaxWidth(0.75f)
                             .height(50.dp),
@@ -217,7 +191,8 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                             contentColor = ButtonTextColor
                         )
                     ) {
-                        Text(text = "Подключение")
+                        Text(text = "Establish connection",
+                            style = MaterialTheme.typography.titleLarge)
                     }
                 }
             }
@@ -241,17 +216,25 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Назад",
+                        contentDescription = "Back",
                         modifier = Modifier.size(30.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 4.dp,
-                    modifier = Modifier.size(60.dp)
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Text(text = "mDNS search...")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp,
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
             }
+
         }
         SearchState.CACHE_SEARCHING -> {
 

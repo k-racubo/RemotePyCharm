@@ -43,7 +43,6 @@ fun MainScreen(onLocalScreen: () -> Unit,
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-
             Text(
                 text = "Remote PyCharm",
                 style = MaterialTheme.typography.titleLarge,
@@ -77,7 +76,7 @@ fun MainScreen(onLocalScreen: () -> Unit,
             shape = RoundedCornerShape(8.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         ) {
-            Text(text = "Локальное подключение")
+            Text(text = "Local connection")
         }
         OutlinedButton(
             onClick = { onRemoteScreen() },
@@ -88,7 +87,7 @@ fun MainScreen(onLocalScreen: () -> Unit,
             shape = RoundedCornerShape(8.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         ) {
-            Text(text = "Удалённое подключение")
+            Text(text = "Remote connection")
         }
         Spacer(modifier = Modifier.weight(1f))
         Column(

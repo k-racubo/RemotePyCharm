@@ -1,6 +1,5 @@
 package com.kracubo.networking.localServer
 
-import PluginServerInfo
 import com.intellij.build.BuildWorkspaceConfiguration
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationManager
