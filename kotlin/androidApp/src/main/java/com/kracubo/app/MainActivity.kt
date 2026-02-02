@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kracubo.app.ui.screens.MainMenu.RemoteScreen
 import com.kracubo.app.ui.screens.mainmenu.LocalConnectionScreen
 import com.kracubo.app.ui.screens.mainmenu.MainScreen
-import com.kracubo.app.ui.screens.mainmenu.RemoteScreen
 import com.kracubo.app.ui.screens.mainmenu.SplashScreen
 import com.kracubo.app.ui.theme.AppTheme
 
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
         setContent {
-            AppTheme(darkTheme = true){
+            AppTheme(){
                 Surface(Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "splash") {
@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("main") {
                             MainScreen(
-                                OnLocalScreen = { navController.navigate("LocalScreen")},
-                                OnRemoteScreen = {navController.navigate("RemoteScreen") }
+                                onLocalScreen = { navController.navigate("LocalScreen")},
+                                onRemoteScreen = {navController.navigate("RemoteScreen") }
                             )
                         }
                         composable("RemoteScreen") {

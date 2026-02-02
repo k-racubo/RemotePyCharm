@@ -43,7 +43,15 @@ dependencies {
     implementation(libs.androidxCore)
     implementation(libs.androidxLifecycle)
     implementation(libs.androidxActivity)
-
+    //jetbrains font
+    implementation("androidx.compose.ui:ui:1.4.0")
+    implementation("androidx.compose.material3:material3:1.0.0")
+    //libs for camera and qrcode
+    val cameraVersion = "1.3.1"
+    implementation("androidx.camera:camera-core:$cameraVersion")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
     implementation(platform(libs.androidxComposeBom))
 
     implementation(libs.androidxComposeUi)
@@ -53,4 +61,6 @@ dependencies {
     implementation(libs.androidxComposeNav)
     implementation(libs.activityKtx)
     implementation(libs.materialIconsOld)
+
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
 }

@@ -1,5 +1,6 @@
 package com.kracubo.networking.localServer
 
+import com.intellij.build.BuildWorkspaceConfiguration
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
