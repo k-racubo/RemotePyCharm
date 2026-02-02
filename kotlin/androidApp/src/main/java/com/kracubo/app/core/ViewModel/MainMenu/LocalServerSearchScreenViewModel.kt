@@ -48,6 +48,11 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
                             cacheSearching() // <---
                         }
                     }
+                    override fun onManualConnect(ip: String, port: Int){
+                        viewModelScope.launch {
+                            searchState = SearchState.CACHE_SEARCHING
+                        }
+                    }
                 }
             }
             nsdHelper?.discoverServices()
@@ -69,19 +74,26 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
         searchJob?.cancel()
         nsdHelper = null
     }
+
     fun cacheSearching() {
         viewModelScope.launch {
-            val preferences: SharedPreferences = appContext.getSharedPreferences("", Context.MODE_PRIVATE)
-            val cachedPort = preferences.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
-            val cachedIp = preferences.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
-            if (cachedPort != -1 && cachedIp != null) {
-                searchState = SearchState.FOUND
-            } else {
-                delay(1000)
+            withTimeoutOrNull(4000L) {
+                val preferences: SharedPreferences = appContext.getSharedPreferences("", Context.MODE_PRIVATE)
+                val cachedPort = preferences.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
+                val cachedIp = preferences.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
+
+                if (cachedPort != -1 && cachedIp != null) {
+                    searchState = SearchState.FOUND
+
+                } else {
+                    delay(40000L)
+                }
+            } ?: run {
                 searchState = SearchState.FULL_SEARCHING_HOLD
             }
         }
     }
+
     fun errorSearch() {
         searchJob?.cancel()
         searchState = SearchState.ERROR
