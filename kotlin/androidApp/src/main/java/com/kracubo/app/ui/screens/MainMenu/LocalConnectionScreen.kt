@@ -35,7 +35,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
@@ -234,10 +233,43 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                     )
                 }
             }
-
         }
         SearchState.CACHE_SEARCHING -> {
-
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = {
+                        exitToMainScreen()
+                        viewModel.stopSearch()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.size(30.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Text(text = "hash searching... ")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp,
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+            }
         }
     }
 }
