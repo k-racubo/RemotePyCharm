@@ -55,7 +55,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
             Toast.makeText(context,"Connection failed", Toast.LENGTH_LONG).show()
         }
         SearchState.FOUND -> {
-            TODO()
+
         }
         SearchState.QR_SEARCHING -> {
 
@@ -133,6 +133,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
             }
         }
         SearchState.FULL_SEARCHING_HOLD ->{
+            viewModel.stopSearch()
             Box(modifier = Modifier.fillMaxSize()) {
                 IconButton(
                     onClick = {
