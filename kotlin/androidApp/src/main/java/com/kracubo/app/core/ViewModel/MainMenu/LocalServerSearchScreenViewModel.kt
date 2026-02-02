@@ -11,6 +11,10 @@ import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.nsdManager.NsdHelper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class LocalServerSearchScreenViewModel(application: Application) : AndroidViewModel(application) {
     var searchState by mutableStateOf<SearchState>(SearchState.MDNS_SEARCHING) // MDNS_SEARCHING
@@ -47,6 +51,15 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
                 }
             }
             nsdHelper?.discoverServices()
+            val result = withTimeoutOrNull(4000L) {
+                while (searchState == SearchState.MDNS_SEARCHING) {
+                    delay(100)
+                }
+            }
+            if (result == null && searchState == SearchState.MDNS_SEARCHING) {
+                searchState = SearchState.CACHE_SEARCHING
+                cacheSearching()
+            }
         }
     }
     fun startFullSearch(){
@@ -58,17 +71,17 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
     }
     fun cacheSearching() {
         viewModelScope.launch {
-            val preferences: SharedPreferences = appContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val preferences: SharedPreferences = appContext.getSharedPreferences("", Context.MODE_PRIVATE)
             val cachedPort = preferences.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
             val cachedIp = preferences.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
             if (cachedPort != -1 && cachedIp != null) {
                 searchState = SearchState.FOUND
             } else {
-                searchState = SearchState.ERROR
+                delay(1000)
+                searchState = SearchState.FULL_SEARCHING_HOLD
             }
         }
     }
-
     fun errorSearch() {
         searchJob?.cancel()
         searchState = SearchState.ERROR
