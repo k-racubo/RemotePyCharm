@@ -5,7 +5,6 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import java.awt.Color
-import java.awt.GridLayout
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JPanel

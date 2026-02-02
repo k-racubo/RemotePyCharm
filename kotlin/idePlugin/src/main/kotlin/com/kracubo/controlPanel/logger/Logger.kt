@@ -1,7 +1,6 @@
 package com.kracubo.controlPanel.logger
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.ui.components.JBTextArea
 import com.kracubo.events.logwindow.AppLogTopics
 import com.kracubo.events.logwindow.LogEntry
 import java.io.File
@@ -10,7 +9,6 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executors
-import javax.swing.SwingUtilities
 
 object Logger {
     private val timestampFormat = DateTimeFormatter.ofPattern("HH:mm:ss")
