@@ -48,6 +48,7 @@ import com.kracubo.app.ui.theme.TextColor
 fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
     val context = LocalContext.current
     var searchPort by remember { mutableStateOf("") }
+    var searchIP by remember { mutableStateOf("") }
     val viewModel: LocalServerSearchScreenViewModel = viewModel()
     when (viewModel.searchState) {
         SearchState.ERROR -> {
@@ -55,7 +56,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
             Toast.makeText(context,"Connection failed", Toast.LENGTH_LONG).show()
         }
         SearchState.FOUND -> {
-
+            Toast.makeText(context,"Connection enter", Toast.LENGTH_LONG).show()
         }
         SearchState.QR_SEARCHING -> {
 
@@ -76,6 +77,23 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(16.dp))
+                    OutlinedTextField(
+                        value = searchIP,
+                        onValueChange = { searchIP = it },
+                        label = { Text("IP", color = LabelColor) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = InputBorderColor,
+                            unfocusedBorderColor = InputBorderColor,
+                            focusedTextColor = TextColor,
+                            unfocusedTextColor = TextColor,
+                            cursorColor = TextColor,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.75f),
+                    )
+                    Spacer(Modifier.height(20.dp))
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },
@@ -162,6 +180,23 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(16.dp))
+                    OutlinedTextField(
+                        value = searchIP,
+                        onValueChange = { searchIP = it },
+                        label = { Text("IP", color = LabelColor) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = InputBorderColor,
+                            unfocusedBorderColor = InputBorderColor,
+                            focusedTextColor = TextColor,
+                            unfocusedTextColor = TextColor,
+                            cursorColor = TextColor,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.75f),
+                    )
+                    Spacer(Modifier.height(20.dp))
                     OutlinedTextField(
                         value = searchPort,
                         onValueChange = { searchPort = it },

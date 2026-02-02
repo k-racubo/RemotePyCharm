@@ -10,11 +10,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.nsdManager.NsdHelper
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 class LocalServerSearchScreenViewModel(application: Application) : AndroidViewModel(application) {
     var searchState by mutableStateOf<SearchState>(SearchState.MDNS_SEARCHING) // MDNS_SEARCHING
@@ -45,18 +43,19 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
                     }
                     override fun onError() {
                         viewModelScope.launch {
+                            println("gbjdwadhgwadwag")
                             cacheSearching() // <---
                         }
                     }
                     override fun onManualConnect(ip: String, port: Int){
                         viewModelScope.launch {
-                            searchState = SearchState.CACHE_SEARCHING
+                            searchState = SearchState.FULL_SEARCHING
                         }
                     }
                 }
             }
             nsdHelper?.discoverServices()
-            val result = withTimeoutOrNull(4000L) {
+            val result = withTimeoutOrNull(1000L) {
                 while (searchState == SearchState.MDNS_SEARCHING) {
                     delay(100)
                 }
@@ -76,19 +75,18 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
     }
 
     fun cacheSearching() {
-        viewModelScope.launch {
-            withTimeoutOrNull(4000L) {
-                val preferences: SharedPreferences = appContext.getSharedPreferences("", Context.MODE_PRIVATE)
-                val cachedPort = preferences.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
-                val cachedIp = preferences.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            println("qwertyuip")
+            val preferences: SharedPreferences = appContext.getSharedPreferences("local_search_prefs", Context.MODE_PRIVATE)
+            val cachedPort = preferences.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
+            val cachedIp = preferences.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
+            if(cachedPort != -1 && cachedIp != null){
+                searchState = SearchState.FULL_SEARCHING_HOLD
 
-                if (cachedPort != -1 && cachedIp != null) {
-                    searchState = SearchState.FOUND
-
-                } else {
-                    delay(40000L)
-                }
-            } ?: run {
+            }
+            else{
+                println("12344566")
                 searchState = SearchState.FULL_SEARCHING_HOLD
             }
         }
