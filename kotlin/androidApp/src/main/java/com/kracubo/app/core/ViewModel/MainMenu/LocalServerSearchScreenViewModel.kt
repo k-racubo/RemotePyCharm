@@ -6,16 +6,14 @@ import android.content.SharedPreferences
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.nsdManager.NsdHelper
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class LocalServerSearchScreenViewModel(application: Application) : AndroidViewModel(application) {
-    var searchState by mutableStateOf<SearchState>(SearchState.MDNS_SEARCHING)
+    var searchState by mutableStateOf<SearchState>(SearchState.MDNS_SEARCHING) // MDNS_SEARCHING
     private var searchJob: Job? = null
     private val appContext get() = getApplication<Application>().applicationContext
 
@@ -51,13 +49,13 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
             nsdHelper?.discoverServices()
         }
     }
-
+    fun startFullSearch(){
+        searchState = SearchState.FULL_SEARCHING
+    }
     fun stopSearch() {
         searchJob?.cancel()
-        searchState = SearchState.ERROR
         nsdHelper = null
     }
-
     fun cacheSearching() {
         viewModelScope.launch {
             val preferences: SharedPreferences = appContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
