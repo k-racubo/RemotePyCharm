@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
+import com.kracubo.app.core.ViewModel.MainMenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 import com.kracubo.app.ui.theme.ButtonBorderColor
 import com.kracubo.app.ui.theme.ButtonTextColor
@@ -47,102 +47,42 @@ import com.kracubo.app.ui.theme.TextColor
 @Composable
 fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
     val context = LocalContext.current
-    var searchPort by remember { mutableStateOf("") }
-    var searchIP by remember { mutableStateOf("") }
-    val viewModel: LocalServerSearchScreenViewModel = viewModel()
-    when (viewModel.searchState) {
-        SearchState.ERROR -> {
-            exitToMainScreen()
-            Toast.makeText(context,"Connection failed", Toast.LENGTH_LONG).show()
-        }
-        SearchState.FOUND -> {
-            Toast.makeText(context,"Connection enter", Toast.LENGTH_LONG).show()
-        }
-        SearchState.QR_SEARCHING -> {
 
-        }
-        SearchState.FULL_SEARCHING -> {
-            Box(
+    var searchIP by remember { mutableStateOf("") }
+    var searchPort by remember { mutableStateOf("") }
+
+    val viewModel: LocalServerSearchScreenViewModel = viewModel()
+
+    @Composable
+    fun splashSearching(searchStateText: String) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)),
+            contentAlignment = Alignment.Center
+        ) {
+            IconButton(
+                onClick = {
+                    exitToMainScreen()
+                    viewModel.stopSearch()
+                },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.Center
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize().blur(10.dp)
-                ) {
-                    Text(text = "Local Connection",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(16.dp))
-                    OutlinedTextField(
-                        value = searchIP,
-                        onValueChange = { searchIP = it },
-                        label = { Text("IP", color = LabelColor) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = InputBorderColor,
-                            unfocusedBorderColor = InputBorderColor,
-                            focusedTextColor = TextColor,
-                            unfocusedTextColor = TextColor,
-                            cursorColor = TextColor,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    OutlinedTextField(
-                        value = searchPort,
-                        onValueChange = { searchPort = it },
-                        label = { Text("Port", color = LabelColor) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = InputBorderColor,
-                            unfocusedBorderColor = InputBorderColor,
-                            focusedTextColor = TextColor,
-                            unfocusedTextColor = TextColor,
-                            cursorColor = TextColor,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    OutlinedButton(
-                        onClick = { viewModel.startSearch() },
-                        modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, ButtonBorderColor),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = ButtonTextColor
-                        )
-                    ) {
-                        Text(text = "Establish connection",
-                            style = MaterialTheme.typography.titleLarge)
-                    }
-                }
-                IconButton(
-                    onClick = {
-                        viewModel.searchState = SearchState.FULL_SEARCHING_HOLD
-                        viewModel.stopSearch()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Назад",
-                        modifier = Modifier.size(30.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                Text(text = searchStateText)
+                Spacer(modifier = Modifier.height(8.dp))
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 4.dp,
@@ -150,8 +90,12 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 )
             }
         }
-        SearchState.FULL_SEARCHING_HOLD ->{
-            viewModel.stopSearch()
+    }
+
+    when (viewModel.searchState) {
+        SearchState.MDNS_SEARCHING -> { splashSearching("mDNS service searching...") }
+        SearchState.CACHE_SEARCHING -> { splashSearching("Trying cache data for connect...") }
+        SearchState.MANUAL_INPUT -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 IconButton(
                     onClick = {
@@ -232,17 +176,75 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 }
             }
         }
-        SearchState.MDNS_SEARCHING -> {
-            viewModel.startSearch()
+        SearchState.MANUAL_CONNECTING -> {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize().blur(10.dp)
+                ) {
+                    Text(text = "Local Connection",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(16.dp))
+                    OutlinedTextField(
+                        value = searchIP,
+                        onValueChange = { searchIP = it },
+                        label = { Text("IP", color = LabelColor) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = InputBorderColor,
+                            unfocusedBorderColor = InputBorderColor,
+                            focusedTextColor = TextColor,
+                            unfocusedTextColor = TextColor,
+                            cursorColor = TextColor,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.75f),
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    OutlinedTextField(
+                        value = searchPort,
+                        onValueChange = { searchPort = it },
+                        label = { Text("Port", color = LabelColor) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = InputBorderColor,
+                            unfocusedBorderColor = InputBorderColor,
+                            focusedTextColor = TextColor,
+                            unfocusedTextColor = TextColor,
+                            cursorColor = TextColor,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.75f),
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    OutlinedButton(
+                        onClick = { viewModel.startSearch() },
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, ButtonBorderColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = ButtonTextColor
+                        )
+                    ) {
+                        Text(text = "Establish connection",
+                            style = MaterialTheme.typography.titleLarge)
+                    }
+                }
                 IconButton(
                     onClick = {
-                        exitToMainScreen()
+                        viewModel.startFullSearch()
                         viewModel.stopSearch()
                     },
                     modifier = Modifier
@@ -251,61 +253,23 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = "Назад",
                         modifier = Modifier.size(30.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    Text(text = "mDNS search...")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = 4.dp,
-                        modifier = Modifier.size(60.dp)
-                    )
-                }
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(60.dp)
+                )
             }
         }
-        SearchState.CACHE_SEARCHING -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    onClick = {
-                        exitToMainScreen()
-                        viewModel.stopSearch()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        modifier = Modifier.size(30.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    Text(text = "hash searching... ")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = 4.dp,
-                        modifier = Modifier.size(60.dp)
-                    )
-                }
-            }
+        SearchState.QR_SEARCHING -> {}
+        SearchState.FOUND -> { Toast.makeText(context,"Connection enter", Toast.LENGTH_LONG).show() }
+        SearchState.ERROR -> {
+            exitToMainScreen()
+            Toast.makeText(context,"Connection failed", Toast.LENGTH_LONG).show()
         }
     }
 }
