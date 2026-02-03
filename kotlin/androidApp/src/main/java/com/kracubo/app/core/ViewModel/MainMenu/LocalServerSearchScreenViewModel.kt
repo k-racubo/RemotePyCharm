@@ -1,101 +1,104 @@
-package com.kracubo.app.core.viewmodel.mainmenu
+package com.kracubo.app.core.ViewModel.MainMenu
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.nsdManager.NsdHelper
+import com.kracubo.app.core.viewmodel.mainmenu.SearchState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 
 class LocalServerSearchScreenViewModel(application: Application) : AndroidViewModel(application) {
-    var searchState by mutableStateOf<SearchState>(SearchState.MDNS_SEARCHING) // MDNS_SEARCHING
+    var searchState by mutableStateOf(SearchState.MDNS_SEARCHING)
+        private set
+
     private var searchJob: Job? = null
     private val appContext get() = getApplication<Application>().applicationContext
 
     private var nsdHelper: NsdHelper? = null
 
-    companion object {
-        private const val KEY_CACHE_LOCAL_SEARCH_PORT = "LOCAL_SEARCH_PORT"
-        private const val KEY_CACHE_LOCAL_SEARCH_IP = "LOCAL_SEARCH_IP"
-    }
+    private val prefs by lazy { appContext.getSharedPreferences("local_search_prefs", Context.MODE_PRIVATE) }
 
+    private val KEY_CACHE_LOCAL_SEARCH_IP = "LOCAL_SEARCH_IP"
+    private val KEY_CACHE_LOCAL_SEARCH_PORT = "LOCAL_SEARCH_PORT"
+
+    init {
+        nsdHelper = NsdHelper(appContext).apply {
+            listener = object : NsdHelper.DiscoveryListener {
+                override fun onServiceFound(ip: String, port: Int) {
+                    viewModelScope.launch(Dispatchers.Main) {
+                        searchState = SearchState.FOUND
+                        stopSearch()
+                    }
+                }
+
+                override fun onError() { Log.e("Nsd Helper", "error") }
+            }
+        }
+
+        startSearch()
+    }
 
     fun startSearch() {
         searchJob?.cancel()
+
         searchJob = viewModelScope.launch {
             searchState = SearchState.MDNS_SEARCHING
-            nsdHelper = NsdHelper(appContext).apply {
-                listener = object : NsdHelper.DiscoveryListener {
-                    override fun onServiceFound() {
-                        searchJob?.cancel()  //  <---
-                        nsdHelper = null     //  <---
 
-                        viewModelScope.launch {
-                            searchState = SearchState.FOUND
-                        }
-                    }
-                    override fun onError() {
-                        viewModelScope.launch {
-                            println("gbjdwadhgwadwag")
-                            cacheSearching() // <---
-                        }
-                    }
-                    override fun onManualConnect(ip: String, port: Int){
-                        viewModelScope.launch {
-                            searchState = SearchState.FULL_SEARCHING
-                        }
-                    }
-                }
-            }
-            nsdHelper?.discoverServices()
-            val result = withTimeoutOrNull(1000L) {
-                while (searchState == SearchState.MDNS_SEARCHING) {
-                    delay(100)
-                }
-            }
-            if (result == null && searchState == SearchState.MDNS_SEARCHING) {
+            nsdHelper?.discoverService()
+
+            delay(3500)
+
+            if (searchState == SearchState.MDNS_SEARCHING) {
+                nsdHelper?.stopDiscovery()
+
                 searchState = SearchState.CACHE_SEARCHING
                 cacheSearching()
+
+                Log.i("NsdViewModel", "Тайм-аут: сервис не найден")
             }
         }
     }
+
     fun startFullSearch(){
-        searchState = SearchState.FULL_SEARCHING
-    }
+        searchState = SearchState.MANUAL_CONNECTING
+    } // дописать логику прямого подключения с searchJob и delay на время подключения иначе финальный ERROR
+
     fun stopSearch() {
+        nsdHelper?.stopDiscovery()
         searchJob?.cancel()
-        nsdHelper = null
     }
 
     fun cacheSearching() {
-        searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            println("qwertyuip")
-            val preferences: SharedPreferences = appContext.getSharedPreferences("local_search_prefs", Context.MODE_PRIVATE)
-            val cachedPort = preferences.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
-            val cachedIp = preferences.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
+            delay(1500)
+
+            val cachedIp = prefs.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
+
+            val cachedPort = prefs.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
+
             if(cachedPort != -1 && cachedIp != null){
-                searchState = SearchState.FULL_SEARCHING_HOLD
+                // тут затычка на переключение на следущий способ (с ручным вводом) т.к. кэш есть но логики нет еще на проверку
+                searchState = SearchState.MANUAL_INPUT
 
             }
             else{
-                println("12344566")
-                searchState = SearchState.FULL_SEARCHING_HOLD
+                searchState = SearchState.MANUAL_INPUT
             }
         }
     }
 
-    fun errorSearch() {
-        searchJob?.cancel()
-        searchState = SearchState.ERROR
-        nsdHelper = null // <---
+    override fun onCleared() {
+        super.onCleared()
+        stopSearch()
+        nsdHelper = null
     }
 }
 
