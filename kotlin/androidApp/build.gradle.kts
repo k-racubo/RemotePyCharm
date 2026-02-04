@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinCompose)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -53,6 +54,16 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
     implementation("androidx.camera:camera-view:$cameraVersion")
     implementation(platform(libs.androidxComposeBom))
+
+    // ktor client and serialization
+    implementation(libs.ktorClientContentNegotiation)
+    implementation(libs.ktorClientCore)
+    implementation(libs.ktorClientCio)
+    implementation(libs.ktorClientWebsockets)
+    implementation(libs.kotlinxSerialization)
+    implementation(libs.kotlinxCoroutines)
+    implementation(libs.ktorSerialization)
+
 
     implementation(libs.androidxComposeUi)
     implementation(libs.androidxComposeGraphics)
