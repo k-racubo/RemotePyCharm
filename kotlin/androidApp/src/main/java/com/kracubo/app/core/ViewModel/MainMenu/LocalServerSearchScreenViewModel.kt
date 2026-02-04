@@ -1,4 +1,4 @@
-package com.kracubo.app.core.ViewModel.MainMenu
+package com.kracubo.app.core.viewmodel.mainmenu
 
 import android.app.Application
 import android.content.Context
@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.nsdManager.NsdHelper
-import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -68,7 +67,7 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
     }
 
     fun startFullSearch(){
-        searchState = SearchState.MANUAL_CONNECTING
+        searchState = SearchState.MANUAL_CONNECTING //<----
     } // дописать логику прямого подключения с searchJob и delay на время подключения иначе финальный ERROR
 
     fun stopSearch() {
@@ -85,7 +84,7 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
             val cachedPort = prefs.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
 
             if(cachedPort != -1 && cachedIp != null){
-                // тут затычка на переключение на следущий способ (с ручным вводом) т.к. кэш есть но логики нет еще на проверку
+                // тут затычка на переключение на следущий способ (с ручным вводом) т.к. кэш есть но логики нет еще на проверку <-----
                 searchState = SearchState.MANUAL_INPUT
 
             }
