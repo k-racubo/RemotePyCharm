@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kracubo.app.core.ViewModel.MainMenu.LocalServerSearchScreenViewModel
+import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 import com.kracubo.app.ui.theme.ButtonBorderColor
 import com.kracubo.app.ui.theme.ButtonTextColor
@@ -92,178 +92,114 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit) {
         }
     }
 
+    @Composable
+    fun manualSearching(isConnecting: Boolean){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(if(isConnecting){Color.Black.copy(alpha = 0.5f)}else{Color.Transparent}),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 60.dp)
+                    .blur(if(isConnecting){10.dp} else {0.dp}),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Local Connection",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(16.dp))
+                OutlinedTextField(
+                    value = searchIP,
+                    onValueChange = { searchIP = it },
+                    label = { Text("IP", color = LabelColor) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = InputBorderColor,
+                        unfocusedBorderColor = InputBorderColor,
+                        focusedTextColor = TextColor,
+                        unfocusedTextColor = TextColor,
+                        cursorColor = TextColor,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    ),
+                    enabled = !isConnecting,
+                    modifier = Modifier.fillMaxWidth(0.75f),
+                )
+                Spacer(Modifier.height(20.dp))
+                OutlinedTextField(
+                    value = searchPort,
+                    onValueChange = { searchPort = it },
+                    label = { Text("Port", color = LabelColor) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = InputBorderColor,
+                        unfocusedBorderColor = InputBorderColor,
+                        focusedTextColor = TextColor,
+                        unfocusedTextColor = TextColor,
+                        cursorColor = TextColor,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    ),
+                    enabled = !isConnecting,
+                    modifier = Modifier.fillMaxWidth(0.75f),
+                )
+                Spacer(Modifier.height(20.dp))
+                OutlinedButton(
+                    onClick = { viewModel.startFullSearch() },
+                    modifier = Modifier
+                        .fillMaxWidth(0.75f)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, ButtonBorderColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = ButtonTextColor
+                    ),
+                    enabled = !isConnecting
+                ) {
+                    Text(text = "Establish connection",
+                        style = MaterialTheme.typography.titleLarge)
+                }
+            }
+            if(isConnecting){
+                Text(text = "Trying force connecting...",
+                    modifier = Modifier.padding(bottom = 90.dp))
+                CircularProgressIndicator(
+
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(60.dp))
+            }
+            IconButton(
+                onClick = {
+                    viewModel.stopSearch()
+                    exitToMainScreen()
+                },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+
     when (viewModel.searchState) {
         SearchState.MDNS_SEARCHING -> { splashSearching("mDNS service searching...") }
         SearchState.CACHE_SEARCHING -> { splashSearching("Trying cache data for connect...") }
         SearchState.MANUAL_INPUT -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                IconButton(
-                    onClick = {
-                        exitToMainScreen()
-                        viewModel.stopSearch()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Назад",
-                        modifier = Modifier.size(30.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "Local Connection",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(16.dp))
-                    OutlinedTextField(
-                        value = searchIP,
-                        onValueChange = { searchIP = it },
-                        label = { Text("IP", color = LabelColor) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = InputBorderColor,
-                            unfocusedBorderColor = InputBorderColor,
-                            focusedTextColor = TextColor,
-                            unfocusedTextColor = TextColor,
-                            cursorColor = TextColor,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    OutlinedTextField(
-                        value = searchPort,
-                        onValueChange = { searchPort = it },
-                        label = { Text("Port", color = LabelColor) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = InputBorderColor,
-                            unfocusedBorderColor = InputBorderColor,
-                            focusedTextColor = TextColor,
-                            unfocusedTextColor = TextColor,
-                            cursorColor = TextColor,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    OutlinedButton(
-                        onClick = { viewModel.startFullSearch() },
-                        modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, ButtonBorderColor),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = ButtonTextColor
-                        )
-                    ) {
-                        Text(text = "Establish connection",
-                            style = MaterialTheme.typography.titleLarge)
-                    }
-                }
-            }
+            manualSearching(false)
         }
         SearchState.MANUAL_CONNECTING -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize().blur(10.dp)
-                ) {
-                    Text(text = "Local Connection",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(16.dp))
-                    OutlinedTextField(
-                        value = searchIP,
-                        onValueChange = { searchIP = it },
-                        label = { Text("IP", color = LabelColor) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = InputBorderColor,
-                            unfocusedBorderColor = InputBorderColor,
-                            focusedTextColor = TextColor,
-                            unfocusedTextColor = TextColor,
-                            cursorColor = TextColor,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    OutlinedTextField(
-                        value = searchPort,
-                        onValueChange = { searchPort = it },
-                        label = { Text("Port", color = LabelColor) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = InputBorderColor,
-                            unfocusedBorderColor = InputBorderColor,
-                            focusedTextColor = TextColor,
-                            unfocusedTextColor = TextColor,
-                            cursorColor = TextColor,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.75f),
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    OutlinedButton(
-                        onClick = { viewModel.startSearch() },
-                        modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, ButtonBorderColor),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = ButtonTextColor
-                        )
-                    ) {
-                        Text(text = "Establish connection",
-                            style = MaterialTheme.typography.titleLarge)
-                    }
-                }
-                IconButton(
-                    onClick = {
-                        viewModel.startFullSearch()
-                        viewModel.stopSearch()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Назад",
-                        modifier = Modifier.size(30.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 4.dp,
-                    modifier = Modifier.size(60.dp)
-                )
-            }
+            manualSearching(true)
         }
         SearchState.QR_SEARCHING -> {}
         SearchState.FOUND -> { Toast.makeText(context,"Connection enter", Toast.LENGTH_LONG).show() }
