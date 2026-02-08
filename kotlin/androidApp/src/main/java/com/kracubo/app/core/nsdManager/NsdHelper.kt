@@ -5,6 +5,7 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresExtension
 
 class NsdHelper(private val context: Context) {
     private val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -41,6 +42,7 @@ class NsdHelper(private val context: Context) {
             Log.i("NsdHelper", "Discovery started")
         }
 
+        @RequiresExtension(extension = Build.VERSION_CODES.TIRAMISU, version = 7)
         override fun onServiceFound(serviceInfo: NsdServiceInfo?) {
             Log.i("NsdHelper", "Service found: ${serviceInfo?.serviceName}")
 
@@ -126,11 +128,9 @@ class NsdHelper(private val context: Context) {
     }
 
     fun handleResolvedService(serviceInfo: NsdServiceInfo) {
-        @Suppress("DEPRECATION")
         val host = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            serviceInfo.hostname ?: serviceInfo.hostAddresses.firstOrNull()?.hostAddress
-        }
-        else {
+            serviceInfo.hostAddresses.firstOrNull()?.hostAddress
+        } else {
             @Suppress("DEPRECATION")
             serviceInfo.host?.hostAddress
         }
