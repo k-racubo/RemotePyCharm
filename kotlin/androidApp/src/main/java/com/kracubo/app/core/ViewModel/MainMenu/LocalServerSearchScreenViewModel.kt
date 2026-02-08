@@ -8,15 +8,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.kracubo.app.core.networking.Client
 import com.kracubo.app.core.nsdManager.NsdHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LocalServerSearchScreenViewModel(application: Application) : AndroidViewModel(application) {
     var searchState by mutableStateOf(SearchState.MDNS_SEARCHING)
-        private set
 
     private var searchJob: Job? = null
     private val appContext get() = getApplication<Application>().applicationContext
@@ -32,9 +33,21 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
         nsdHelper = NsdHelper(appContext).apply {
             listener = object : NsdHelper.DiscoveryListener {
                 override fun onServiceFound(ip: String, port: Int) {
-                    viewModelScope.launch(Dispatchers.Main) {
-                        searchState = SearchState.FOUND
-                        stopSearch()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        if (searchState == SearchState.FOUND) return@launch
+
+                        val connected = Client.connect(ip, port)
+
+                        withContext(Dispatchers.Main) {
+                            if (connected) {
+                                println("samskfdsdgwmqekrefgnffmnsdl")
+                                searchState = SearchState.FOUND
+                                stopSearch()
+                            } else {
+                                println("samskfdsdg")
+                                // Можно уведомить пользователя, что сервис нашли, но handshake не прошел
+                            }
+                        }
                     }
                 }
 
@@ -53,7 +66,7 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
 
             nsdHelper?.discoverService()
 
-            delay(3500)
+            delay(5000)
 
             if (searchState == SearchState.MDNS_SEARCHING) {
                 nsdHelper?.stopDiscovery()
