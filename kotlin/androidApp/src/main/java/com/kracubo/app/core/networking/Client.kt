@@ -1,5 +1,8 @@
 package com.kracubo.app.core.networking
 
+import com.kracubo.app.core.networking.handlers.Handler
+import core.ApiJson
+import core.Event
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -10,13 +13,17 @@ import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
+import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import project.WelcomePacket
 import kotlin.time.Duration.Companion.seconds
 
 object Client {
@@ -32,31 +39,30 @@ object Client {
 
     private var currentSession: DefaultClientWebSocketSession? = null
 
-    fun connect(ip: String, port: Int, token: String? = null) {
+    private val handler: Handler by lazy { Handler() }
+
+    suspend fun connect(ip: String, port: Int, token: String? = null) : Boolean {
+        val connectionResult = CompletableDeferred<Boolean>()
+
         scope.launch {
             currentSession?.cancel()
 
             try {
                 httpClient.webSocket(host = ip, port = port, path = "/ws") {
-                    currentSession = this
-
-                    if (token == null) {
-                        for (frame in incoming) {
-                            if (frame is Frame.Text) {
-                                val text = frame.readText()
-                                // логика обработки пакетов
-                            }
-                        }
-                        currentSession?.cancel()
-                        currentSession = null
-                        // disconnect
-                    }
+                    handleConnection(this, token, connectionResult)
                 }
-            } catch (_: Exception) {
-                // ошибочки
+            } catch (e: Exception) {
+                e.printStackTrace()
+                connectionResult.complete(false)
             } finally {
                 currentSession = null
             }
+        }
+
+        return try {
+            withTimeout(2000) { connectionResult.await() }
+        } catch (_: Exception) {
+            false
         }
     }
 
@@ -66,6 +72,49 @@ object Client {
                 "User initiated disconnect"))
             currentSession = null
             println("Disconnected by user")
+        }
+    }
+
+    private suspend fun handleConnection(session: WebSocketSession, token: String?,
+                                         connResult: CompletableDeferred<Boolean>) {
+        currentSession = session as DefaultClientWebSocketSession
+
+        try {
+            val firstFrame = session.incoming.receive()
+
+            if (firstFrame is Frame.Text) {
+                if (ApiJson.instance.decodeFromString<Event>(firstFrame.readText()) !is WelcomePacket) {
+                    session.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT,
+                        "Invalid Welcome Packet"))
+                    connResult.complete(false)
+                    return
+                }
+            } else {
+                session.close(CloseReason(CloseReason.Codes.PROTOCOL_ERROR,
+                    "Expected text frame"))
+                connResult.complete(false)
+                return
+            }
+        } catch (e: Exception) {
+            session.close(CloseReason(CloseReason.Codes.PROTOCOL_ERROR,
+                "Issues with packet data. Error: ${e.message}"))
+            connResult.complete(false)
+            return
+        }
+
+        connResult.complete(true)
+
+        if (token == null) {
+            for (frame in session.incoming) {
+                if (frame is Frame.Text) {
+                    val text = frame.readText()
+
+
+                }
+            }
+            currentSession?.cancel()
+            currentSession = null
+            // disconnect
         }
     }
 }
