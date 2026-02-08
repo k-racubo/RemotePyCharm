@@ -1,6 +1,5 @@
 package com.kracubo.networking.localServer
 
-import com.intellij.build.BuildWorkspaceConfiguration
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -15,6 +14,7 @@ import com.kracubo.events.localServer.UnexpectedServerDown
 import com.kracubo.extensions.prettyJson
 import com.kracubo.networking.localServer.handlers.Handler
 import core.ApiJson
+import core.Event
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.application.install
@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonObject
+import project.WelcomePacket
 import kotlin.time.Duration.Companion.seconds
 
 @Service(Service.Level.APP)
@@ -56,6 +57,11 @@ class LocalWebSocketServer : Disposable {
     var isServerStarted: Boolean = false
 
     private val handler: Handler by lazy { Handler() }
+
+    private val version: String by lazy {
+        val pluginId = PluginId.getId("com.kracubo.remotepycharm")
+        PluginManagerCore.getPlugin(pluginId)?.version ?: "1.0.0"
+    }
 
     fun start(port: Int): Boolean {
         return try {
@@ -95,10 +101,7 @@ class LocalWebSocketServer : Disposable {
             this.port = port
             isServerStarted = true
 
-            val pluginId = PluginId.getId("com.kracubo.remotepycharm")
-            val pluginVersion = PluginManagerCore.getPlugin(pluginId)?.version ?: "1.0.0"
-
-            UdpListener.createMdnsService(port, pluginVersion)
+            UdpListener.createMdnsService(port, version)
 
             true
         } catch (e: Exception) {
@@ -136,6 +139,8 @@ class LocalWebSocketServer : Disposable {
         currentSession = session
 
         Logger.log("New connection: $hostAddress", SenderType.LOCAL_SERVER)
+
+        session.send(ApiJson.instance.encodeToString<Event>(WelcomePacket(version = version)))
 
         try {
             for (frame in session.incoming) {
