@@ -3,6 +3,7 @@ package com.kracubo.app.core.viewmodel.mainmenu
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,12 +41,12 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
 
                         withContext(Dispatchers.Main) {
                             if (connected) {
-                                println("samskfdsdgwmqekrefgnffmnsdl")
+                                println("successful connection!")
                                 searchState = SearchState.FOUND
                                 stopSearch()
                             } else {
-                                println("samskfdsdg")
-                                // Можно уведомить пользователя, что сервис нашли, но handshake не прошел
+                                println("handshake failed verification :(")
+                                Toast.makeText(context,"Connection failed", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -111,9 +112,14 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
             val cachedPort = prefs.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
 
             if(cachedPort != -1 && cachedIp != null){
-                // тут затычка на переключение на следущий способ (с ручным вводом) т.к. кэш есть но логики нет еще на проверку <-----
-                searchState = SearchState.MANUAL_INPUT
-
+                val connected = Client.connect(cachedIp, cachedPort)
+                if(connected){
+                    searchState = SearchState.FOUND
+                    stopSearch()
+                }else{
+                    searchState = SearchState.MANUAL_INPUT
+                    stopSearch()
+                }
             }
             else{
                 searchState = SearchState.MANUAL_INPUT
