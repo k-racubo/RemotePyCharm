@@ -79,8 +79,22 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
         }
     }
 
-    fun startFullSearch(){
-        searchState = SearchState.MANUAL_CONNECTING //<----
+    fun startFullSearch(ip: String, port: Int){
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            searchState = SearchState.MANUAL_CONNECTING
+
+            val connected = Client.connect(ip, port)
+
+            withContext(Dispatchers.Main) {
+                if (connected) {
+                    searchState = SearchState.FOUND
+                    stopSearch()
+                } else {
+                    searchState = SearchState.ERROR
+                }
+            }
+        }
     } // дописать логику прямого подключения с searchJob и delay на время подключения иначе финальный ERROR
 
     fun stopSearch() {
