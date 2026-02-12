@@ -1,6 +1,7 @@
 package com.kracubo.app.ui.screens.mainmenu
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -29,8 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
+import com.kracubo.app.CodeEditorActivity
 import com.kracubo.app.R
 import com.kracubo.app.ui.customscrollbar.scrollbar
 
@@ -123,6 +126,7 @@ fun MainScreen(onLocalScreen: () -> Unit,
             )
             Text(
                 text = "v1.0.12",
+                Modifier.clickable(true, onClick = { context.startActivity(Intent(context, CodeEditorActivity::class.java))}),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
             )
