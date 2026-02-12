@@ -60,8 +60,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }, toCodeEditor = {
-                                val intent = Intent(context, CodeEditorActivity::class.java)
-                                context.startActivity(intent)
+                                context.startActivity(Intent(context, CodeEditorActivity::class.java))
                             })
                         }
                     }
