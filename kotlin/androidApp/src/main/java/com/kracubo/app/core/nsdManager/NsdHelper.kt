@@ -4,18 +4,22 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
+import android.os.ext.SdkExtensions
 import android.util.Log
 import androidx.annotation.RequiresExtension
+import java.util.concurrent.atomic.AtomicBoolean
 
 class NsdHelper(val context: Context) {
     private val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
     // flag for old resolveService()
-    private var isResolving = false
+    private val isResolving = AtomicBoolean(false)
 
-    private var isDiscoveryActive = false
+    private var isDiscoveryActive = AtomicBoolean(false)
 
-    private val serviceInfoCallback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    private val serviceInfoCallback = if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) &&
+            SdkExtensions.getExtensionVersion(Build.VERSION_CODES.TIRAMISU) >= 7) {
         object : NsdManager.ServiceInfoCallback {
             override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
                 Log.e("NsdHelper", "Callback registration failed: $errorCode")
@@ -38,7 +42,7 @@ class NsdHelper(val context: Context) {
 
     private val discoveryListener = object : NsdManager.DiscoveryListener {
         override fun onDiscoveryStarted(regType: String?) {
-            isDiscoveryActive = true
+            isDiscoveryActive.set(true)
             Log.i("NsdHelper", "Discovery started")
         }
 
@@ -46,7 +50,7 @@ class NsdHelper(val context: Context) {
         override fun onServiceFound(serviceInfo: NsdServiceInfo?) {
             Log.i("NsdHelper", "Service found: ${serviceInfo?.serviceName}")
 
-            if (isResolving) {
+            if (!isResolving.compareAndSet(false,true)) {
                 Log.w("NsdHelper", "Resolve already in progress, skipping...")
                 return
             }
@@ -55,17 +59,15 @@ class NsdHelper(val context: Context) {
                 if (serviceInfoCallback != null) {
                     nsdManager.registerServiceInfoCallback(it, { it.run() }, serviceInfoCallback)
                 } else {
-                    isResolving = true
-
                     // depricated cause old (but usable for old android versions)
                     nsdManager.resolveService(it, object : NsdManager.ResolveListener {
                         override fun onServiceResolved(resolvedInfo: NsdServiceInfo) {
-                            isResolving = false
+                            isResolving.set(false)
                             handleResolvedService(resolvedInfo)
                         }
 
                         override fun onResolveFailed(si: NsdServiceInfo, errorCode: Int) {
-                            isResolving = false
+                            isResolving.set(false)
                             listener?.onError()
                         }
                     })
@@ -78,12 +80,12 @@ class NsdHelper(val context: Context) {
         }
 
         override fun onDiscoveryStopped(serviceType: String?) {
-            isDiscoveryActive = false
+            isDiscoveryActive.set(false)
             Log.i("NsdHelper", "Discovery stopped")
         }
 
         override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
-            isDiscoveryActive = false
+            isDiscoveryActive.set(false)
             Log.e("NsdHelper", "Start discovery failed: $errorCode")
             listener?.onError()
         }
@@ -109,7 +111,7 @@ class NsdHelper(val context: Context) {
     }
 
     fun stopDiscovery() {
-        if (!isDiscoveryActive) return
+        if (!isDiscoveryActive.get()) return
 
         try {
             nsdManager.stopServiceDiscovery(discoveryListener)
@@ -122,8 +124,8 @@ class NsdHelper(val context: Context) {
         } catch (e: Exception) {
             Log.e("NsdHelper", "Stop error: ${e.message}")
         } finally {
-            isResolving = false
-            isDiscoveryActive = false
+            isResolving.set(false)
+            isDiscoveryActive.set(false)
         }
     }
 
