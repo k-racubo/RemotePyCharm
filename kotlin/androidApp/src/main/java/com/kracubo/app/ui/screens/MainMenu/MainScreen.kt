@@ -129,4 +129,3 @@ fun MainScreen(onLocalScreen: () -> Unit,
         }
     }
 }
-
