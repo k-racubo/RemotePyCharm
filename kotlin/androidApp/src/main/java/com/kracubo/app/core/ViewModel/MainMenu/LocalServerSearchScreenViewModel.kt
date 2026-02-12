@@ -105,25 +105,15 @@ class LocalServerSearchScreenViewModel(application: Application) : AndroidViewMo
 
     fun cacheSearching() {
         searchJob = viewModelScope.launch {
-            delay(1500)
-
             val cachedIp = prefs.getString(KEY_CACHE_LOCAL_SEARCH_IP, null)
-
             val cachedPort = prefs.getInt(KEY_CACHE_LOCAL_SEARCH_PORT, -1)
 
-            if(cachedPort != -1 && cachedIp != null){
+            if(cachedPort != -1 && cachedIp != null) {
                 val connected = Client.connect(cachedIp, cachedPort)
-                if(connected){
-                    searchState = SearchState.FOUND
-                    stopSearch()
-                }else{
-                    searchState = SearchState.MANUAL_INPUT
-                    stopSearch()
-                }
+
+                searchState = if (connected) SearchState.FOUND else SearchState.MANUAL_INPUT
             }
-            else{
-                searchState = SearchState.MANUAL_INPUT
-            }
+            else searchState = SearchState.MANUAL_INPUT
         }
     }
 
