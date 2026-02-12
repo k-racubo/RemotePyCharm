@@ -113,7 +113,11 @@ fun MainScreen(onLocalScreen: () -> Unit,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                 modifier = Modifier.clickable(onClick = {
                     //test hash reset function
-                    preferences.edit { remove("is_first_run").apply()}
+                    preferences.edit {
+                        remove("is_first_run").apply()
+                        remove("LOCAL_SEARCH_IP").apply()
+                        remove("LOCAL_SEARCH_PORT").apply()
+                    }
                     Toast.makeText(context,"hash reset", Toast.LENGTH_LONG).show()
                 })
             )
