@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,7 +53,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit, toCodeEditor: () -> Unit
     val context = LocalContext.current
 
     var searchIP by remember { mutableStateOf("") }
-    var searchPort by remember { mutableStateOf("") }
+    var searchPort by remember { mutableIntStateOf(-1) }
 
     val viewModel: LocalServerSearchScreenViewModel = viewModel()
 
@@ -133,8 +134,11 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit, toCodeEditor: () -> Unit
                 )
                 Spacer(Modifier.height(20.dp))
                 OutlinedTextField(
-                    value = searchPort,
-                    onValueChange = { searchPort = it },
+                    value = searchPort.toString(),
+                    onValueChange = { newValue ->
+                        val parsedPort = newValue.toIntOrNull() ?: -1
+                        searchPort = parsedPort
+                    },
                     label = { Text("Port", color = LabelColor) },
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -151,7 +155,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit, toCodeEditor: () -> Unit
                 )
                 Spacer(Modifier.height(20.dp))
                 OutlinedButton(
-                    onClick = { viewModel.startFullSearch() },
+                    onClick = { viewModel.startFullSearch(searchIP, searchPort) },
                     modifier = Modifier
                         .fillMaxWidth(0.75f)
                         .height(50.dp),
