@@ -7,7 +7,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
 
-class NsdHelper(private val context: Context) {
+class NsdHelper(val context: Context) {
     private val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
     // flag for old resolveService()
