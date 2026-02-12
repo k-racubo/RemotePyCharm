@@ -1,6 +1,5 @@
 package com.kracubo.app.ui.screens.mainmenu
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -38,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kracubo.app.CodeEditorActivity
 import com.kracubo.app.core.viewmodel.mainmenu.LocalServerSearchScreenViewModel
 import com.kracubo.app.core.viewmodel.mainmenu.SearchState
 import com.kracubo.app.ui.theme.ButtonBorderColor
@@ -46,14 +44,13 @@ import com.kracubo.app.ui.theme.ButtonTextColor
 import com.kracubo.app.ui.theme.InputBorderColor
 import com.kracubo.app.ui.theme.LabelColor
 import com.kracubo.app.ui.theme.TextColor
-import kotlin.jvm.java
 
 @Composable
 fun LocalConnectionScreen(exitToMainScreen: () -> Unit, toCodeEditor: () -> Unit) {
     val context = LocalContext.current
 
     var searchIP by remember { mutableStateOf("") }
-    var searchPort by remember { mutableIntStateOf(-1) }
+    var searchPort by remember { mutableIntStateOf(0) }
 
     val viewModel: LocalServerSearchScreenViewModel = viewModel()
 
@@ -136,7 +133,7 @@ fun LocalConnectionScreen(exitToMainScreen: () -> Unit, toCodeEditor: () -> Unit
                 OutlinedTextField(
                     value = searchPort.toString(),
                     onValueChange = { newValue ->
-                        val parsedPort = newValue.toIntOrNull() ?: -1
+                        val parsedPort = newValue.toIntOrNull() ?: 0
                         searchPort = parsedPort
                     },
                     label = { Text("Port", color = LabelColor) },
