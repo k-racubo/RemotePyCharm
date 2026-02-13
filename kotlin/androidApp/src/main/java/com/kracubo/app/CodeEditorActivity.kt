@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.kracubo.app.ui.theme.AppTheme
 import androidx.navigation.compose.composable
-import com.kracubo.app.ui.screens.codeeditor.editor.CodeEditorScreen
+// import com.kracubo.app.ui.screens.codeeditor.editor.CodeEditorScreen
 import com.kracubo.app.ui.screens.codeeditor.projectsslist.ProjectsList
 
 
@@ -33,7 +33,7 @@ class CodeEditorActivity: ComponentActivity() {
                             })
                         }
                         composable("CodeEditor") {
-                            CodeEditorScreen()
+                            // CodeEditorScreen()
                         }
                     }
                 }
