@@ -1,5 +1,7 @@
 package core
 
+import file.FileContentResponse
+import file.GetFileContent
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -24,6 +26,7 @@ object ApiJson {
                 subclass(GetProjectsList::class)
                 subclass(OpenProjectCommand::class)
                 subclass(RunCurrentConfigCommand::class)
+                subclass(GetFileContent::class)
             }
 
             polymorphic(Response::class) {
@@ -31,6 +34,7 @@ object ApiJson {
                 subclass(ProjectFileTreeResponse::class)
                 subclass(ResultOfRunResponse::class)
                 subclass(ErrorResponse::class)
+                subclass(FileContentResponse::class)
             }
         }
     }
