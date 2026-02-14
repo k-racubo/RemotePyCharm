@@ -163,32 +163,3 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
     }
 }
 
-@Composable
-fun ProjectItem(project: Project, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .background(project.color, shape = RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = project.initials,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = project.name,
-            color = Color.White,
-            fontSize = 16.sp  )
-    }
-}
-
