@@ -2,7 +2,6 @@ package com.kracubo.app.ui.screens.codeeditor.projectsslist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,13 +31,11 @@ import com.kracubo.app.core.viewmodel.codeditor.Project
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
 import com.kracubo.app.ui.customscrollbar.rememberScrollbarState
-import com.kracubo.app.ui.customscrollbar.scrollbar
 import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
 
 
 @Composable
 fun ProjectsList(toCodeEditor: () -> Unit) {
-
     val projects = listOf(
         Project("PP", "PythonProject1", Color(0xFF4CAF50)),
         Project("HP", "HuilaProject729", Color(0xFF26A69A)),
@@ -66,13 +61,10 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
         Project("PH", "PinkHuetaZaborPizda", Color(0xFFD061A2)),
         Project("CK", "CharlieKirk", Color(0xFF758DD9)),
         Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-
     )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF22232A))
             .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
         Row(
@@ -84,7 +76,7 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
                 text = "Remote Pycharm",
                 color = Color.LightGray,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 26.sp
             )
             Icon(
                 imageVector = Icons.Default.Search,
@@ -98,14 +90,14 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
         Text(
             text = "Recent projects",
             color = Color.Gray,
-            fontSize = 14.sp
+            fontSize = 20.sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp)
+                .height(450.dp)
                 .padding(vertical = 24.dp)
         ) {
             Box(
@@ -145,21 +137,27 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Text(
-                text = "Contact support",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-            )
-            Text(
-                text = "v1.0.12",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
-            )
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Contact support",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                )
+                Text(
+                    text = "v1.0.12",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                )
+            }
         }
+
     }
 }
 
