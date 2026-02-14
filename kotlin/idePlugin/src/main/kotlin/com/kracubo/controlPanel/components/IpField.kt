@@ -25,13 +25,11 @@ class IpField(
             onIsValidIpState()
         }
 
-
-
     init {
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         maximumSize = JBUI.size(Int.MAX_VALUE, 50)
 
-        ipFieldLabel = JBLabel("ip: ").apply {
+        ipFieldLabel = JBLabel("Ip: ").apply {
             font = JBUI.Fonts.label(14f)
             horizontalAlignment = SwingConstants.RIGHT
         }
@@ -63,15 +61,15 @@ class IpField(
                         else -> false
                     }
 
-                    if (isValidIp) clearError() else showError("Invalid host")
+                    if (isValidIp) clearError() else showError()
                 }
 
-                private fun showError(message: String) {
+                private fun showError() {
                     background = JBColor(
                         Color(255, 230, 230),
                         Color(80, 50, 50)
                     )
-                    toolTipText = message
+                    toolTipText = "Invalid host"
                 }
 
                 private fun clearError() {

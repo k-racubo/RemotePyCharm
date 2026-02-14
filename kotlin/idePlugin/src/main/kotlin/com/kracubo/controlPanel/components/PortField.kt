@@ -15,9 +15,9 @@ class PortField(
     private val onIsValidPortState: () -> Unit
 ) : JPanel() {
 
-    val portFieldLabel: JBLabel //
-                                // public for override in remote server card
-    val portTextField: JBTextField //
+    val portFieldLabel: JBLabel
+
+    val portTextField: JBTextField
 
     var isValidPort: Boolean = false
         set(value) {
@@ -29,7 +29,7 @@ class PortField(
         layout = GridLayout(1, 2, 15, 0)
         maximumSize = JBUI.size(Int.MAX_VALUE, 50)
 
-        portFieldLabel = JBLabel("port: ").apply {
+        portFieldLabel = JBLabel("Port: ").apply {
             font = JBUI.Fonts.label(14f)
             horizontalAlignment = SwingConstants.RIGHT
         }

@@ -109,7 +109,7 @@ class LocalWebSocketServer : Disposable {
     }
 
     fun stop() {
-        isServerStarted = false // first for unexpected server down if condition
+        isServerStarted = false
         server?.stop(1000, 5000)
 
         port = null

@@ -23,14 +23,14 @@ import javax.swing.SwingUtilities
 
 class MainPanel : JPanel(), Disposable {
 
-    val label: JBLabel
+    private val label: JBLabel
 
-    val mainButtonsCard: MainButtonsCard
-    val localServerButtonsCard: LocalServerButtonsCard
-    val remoteServerButtonsCard: RemoteServerButtonsCard
+    private val mainButtonsCard: MainButtonsCard
+    private val localServerButtonsCard: LocalServerButtonsCard
+    private val remoteServerButtonsCard: RemoteServerButtonsCard
 
-    val logWindow: LogWindow
-    val logControlPanel: LogControlPanel
+    private val logWindow: LogWindow
+    private val logControlPanel: LogControlPanel
 
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
