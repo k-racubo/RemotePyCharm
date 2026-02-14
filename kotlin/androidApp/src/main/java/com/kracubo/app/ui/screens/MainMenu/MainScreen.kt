@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.kracubo.app.CodeEditorActivity
@@ -44,7 +43,6 @@ import com.kracubo.app.R
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
 import com.kracubo.app.ui.customscrollbar.rememberScrollbarState
-import com.kracubo.app.ui.customscrollbar.scrollbar
 import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
 
 @Composable
