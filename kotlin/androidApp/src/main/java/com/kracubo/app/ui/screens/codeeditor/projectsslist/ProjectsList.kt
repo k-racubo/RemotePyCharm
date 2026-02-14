@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kracubo.app.core.ViewModel.codeditor.ProjectsListViewModel
 import com.kracubo.app.core.viewmodel.codeditor.Project
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
@@ -36,6 +38,7 @@ import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
 
 @Composable
 fun ProjectsList(toCodeEditor: () -> Unit) {
+    val viewModel: ProjectsListViewModel = viewModel()
     val projects = listOf(
         Project("PP", "PythonProject1", Color(0xFF4CAF50)),
         Project("HP", "HuilaProject729", Color(0xFF26A69A)),
