@@ -42,8 +42,6 @@ object Client {
 
     private var currentSession: DefaultClientWebSocketSession? = null
 
-    private val handler: Handler by lazy { Handler() }
-
     suspend fun connect(ip: String, port: Int, token: String? = null) : Boolean {
         val connectionResult = CompletableDeferred<Boolean>()
 
@@ -112,7 +110,7 @@ object Client {
                 if (frame is Frame.Text) {
                     val text = frame.readText()
 
-
+                    Handler.resolve(text)
                 }
             }
             currentSession?.cancel()
