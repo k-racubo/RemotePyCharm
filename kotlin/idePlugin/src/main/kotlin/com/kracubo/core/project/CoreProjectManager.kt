@@ -15,12 +15,19 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.networking.localServer.handlers.Handler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import project.list.ProjectInfo
 import java.nio.file.Paths
 
 
 @Service(Service.Level.APP)
 class CoreProjectManager : Disposable {
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
         ApplicationManager.getApplication().messageBus.connect(this)
@@ -29,6 +36,8 @@ class CoreProjectManager : Disposable {
                     if (project.basePath == activeProjectPath) {
                         Logger.log("Active project was closed by user", SenderType.LOGGER, MessageType.WARNING)
                         activeProjectPath = null
+
+                        serviceScope.launch { Handler.getInstance().sendOnClosedProjectEvent() }
                     }
                 }
             })
@@ -37,12 +46,20 @@ class CoreProjectManager : Disposable {
     companion object { fun getInstance() = service<CoreProjectManager>() }
 
     private var activeProjectPath: String? = null
+        set(value) {
+            field = value
+
+            if (value == null) { closeProject() }
+        }
 
     fun getProjects() : List<ProjectInfo>? {
         val manager = RecentProjectsManager.getInstance() as? RecentProjectsManagerBase
         if (manager == null) {
             Logger.log("RecentProjectsManager is not RecentProjectsManagerBase instance",
                 SenderType.LOGGER, MessageType.ERROR)
+
+
+
             return null
         }
 
@@ -89,6 +106,11 @@ class CoreProjectManager : Disposable {
         Logger.log("Project: $pName is opened", SenderType.LOCAL_SERVER)
 
         activeProjectPath = projectPath
+    }
+
+    private fun closeProject() {
+        val project = ProjectManager.getInstance().openProjects.find { it.basePath == activeProjectPath }
+        project?.let { ProjectManager.getInstance().closeAndDispose(it) }
     }
 
     private fun getActiveProject(): Project? {
