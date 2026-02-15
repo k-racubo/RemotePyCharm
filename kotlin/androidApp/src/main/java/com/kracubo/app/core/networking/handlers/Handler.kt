@@ -1,7 +1,7 @@
 package com.kracubo.app.core.networking.handlers
 
 import androidx.lifecycle.ViewModel
-import com.kracubo.app.core.ViewModel.codeditor.ProjectsListViewModel
+import com.kracubo.app.core.viewmodels.codeditor.ProjectsListViewModel
 import com.kracubo.app.core.networking.Client
 import core.ApiJson
 import core.Response
