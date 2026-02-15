@@ -1,7 +1,6 @@
 package com.kracubo.app
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,10 +26,7 @@ class CodeEditorActivity: ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "ListProjects") {
                         composable("ListProjects"){
-                            ProjectsList({
-                                navController.navigate("CodeEditor")
-                                Toast.makeText(context,"this is projects list", Toast.LENGTH_LONG).show()
-                            })
+                            ProjectsList { navController.navigate("CodeEditor") }
                         }
                         composable("CodeEditor") {
                             CodeEditorScreen()
