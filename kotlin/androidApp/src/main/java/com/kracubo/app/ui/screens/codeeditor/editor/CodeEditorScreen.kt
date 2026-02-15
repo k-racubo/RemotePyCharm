@@ -1,5 +1,6 @@
 package com.kracubo.app.ui.screens.codeeditor.editor
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodeEditorScreen() {
@@ -76,17 +78,15 @@ async def factorial(name, number):
                     onSearchClick = { /* poisk huini */ }
                 )
             }
-        ) { paddingValues -> //Короче нахуй желательно не трогать
+        ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 CodeEditor(
-                    code = codeContent,
-                    onCodeChange = { codeContent = it },
                     modifier = Modifier
                         .weight(if (showTerminal) 1f else 1f)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    code = codeContent,
+                    onCodeChange = { codeContent = it }
                 )
-                // че за нахуй почему здесь ошибки высвечиваются
-                    // разберусь потом кароч
 
                 if (showTerminal) {
                     TerminalView(
@@ -97,7 +97,6 @@ async def factorial(name, number):
                 }
             }
         }
-
 
         AnimatedVisibility(
             visible = drawerOpen,
@@ -133,64 +132,6 @@ async def factorial(name, number):
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun CodeEditor(
-    code: String,
-    onCodeChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val lineCount = code.lines().size
-
-    Box(
-        modifier = modifier
-            .background(Color(0xFF1E1E1E))
-    ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            // ебучая кривожопая хуйня
-            Column(
-                modifier = Modifier
-                    .width(50.dp)
-                    .background(Color(0xFF252526))
-                    .padding(vertical = 8.dp, horizontal = 8.dp)
-            ) {
-                (1..maxOf(lineCount, 1)).forEach { lineNum ->
-                    Text(
-                        text = "$lineNum",
-                        fontSize = 14.sp,
-                        color = Color(0xFF858585),
-                        fontFamily = FontFamily.Monospace,
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
-                }
-            }
-
-            TextField(
-                value = code,
-                onValueChange = onCodeChange,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    lineHeight = 20.sp
-                ),
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = Color.White
-                ),
-                singleLine = false
-            )
         }
     }
 }
