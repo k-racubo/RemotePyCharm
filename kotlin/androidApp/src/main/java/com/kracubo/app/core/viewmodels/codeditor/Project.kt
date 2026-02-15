@@ -1,9 +1,10 @@
-package com.kracubo.app.core.viewmodel.codeditor
+package com.kracubo.app.core.viewmodels.codeditor
 
 import androidx.compose.ui.graphics.Color
 
 data class Project(
     val initials: String,
     val name: String,
+    val path: String,
     val color: Color
 )
