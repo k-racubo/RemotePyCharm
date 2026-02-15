@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.networking.handlers.Handler
-import com.kracubo.app.core.viewmodel.codeditor.Project
 import kotlinx.coroutines.launch
 import project.list.ProjectInfo
 
