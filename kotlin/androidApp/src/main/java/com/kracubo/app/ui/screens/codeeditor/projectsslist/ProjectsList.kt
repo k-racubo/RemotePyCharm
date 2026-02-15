@@ -1,5 +1,6 @@
 package com.kracubo.app.ui.screens.codeeditor.projectsslist
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -8,15 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kracubo.app.core.ViewModel.codeditor.ProjectsListViewModel
-import com.kracubo.app.core.viewmodel.codeditor.Project
+import com.kracubo.app.R
+import com.kracubo.app.core.viewmodels.codeditor.ProjectsListViewModel
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
 import com.kracubo.app.ui.customscrollbar.rememberScrollbarState
@@ -39,56 +41,35 @@ import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
 @Composable
 fun ProjectsList(toCodeEditor: () -> Unit) {
     val viewModel: ProjectsListViewModel = viewModel()
-    val projects = listOf(
-        Project("PP", "PythonProject1", Color(0xFF4CAF50)),
-        Project("HP", "HuilaProject729", Color(0xFF26A69A)),
-        Project("SD", "SalviaDivinorum", Color(0xFFBA7867)),
-        Project("PH", "PinkHuetaZaborPizda", Color(0xFFD061A2)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("PP", "PythonProject1", Color(0xFF4CAF50)),
-        Project("HP", "HuilaProject729", Color(0xFF26A69A)),
-        Project("SD", "SalviaDivinorum", Color(0xFFBA7867)),
-        Project("PH", "PinkHuetaZaborPizda", Color(0xFFD061A2)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("PP", "PythonProject1", Color(0xFF4CAF50)),
-        Project("HP", "HuilaProject729", Color(0xFF26A69A)),
-        Project("SD", "SalviaDivinorum", Color(0xFFBA7867)),
-        Project("PH", "PinkHuetaZaborPizda", Color(0xFFD061A2)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("PP", "PythonProject1", Color(0xFF4CAF50)),
-        Project("HP", "HuilaProject729", Color(0xFF26A69A)),
-        Project("SD", "SalviaDivinorum", Color(0xFFBA7867)),
-        Project("PH", "PinkHuetaZaborPizda", Color(0xFFD061A2)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-        Project("CK", "CharlieKirk", Color(0xFF758DD9)),
-    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.dark_logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(40.dp),
+                contentScale = ContentScale.Fit
+            )
+
             Text(
                 text = "Remote Pycharm",
                 color = Color.LightGray,
                 fontWeight = FontWeight.Bold,
                 fontSize = 26.sp
             )
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = Color.LightGray
-            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         Text(
             text = "Recent projects",
@@ -96,16 +77,16 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
             fontSize = 20.sp
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(450.dp)
-                .padding(vertical = 24.dp)
+                .height(475.dp)
+                .padding(vertical = 12.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight()
                     .border(
                         width = 2.dp,
                         color = Color.LightGray,
@@ -130,8 +111,11 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
                                 barColor = ColorType.Solid(MaterialTheme.colorScheme.onSecondaryContainer)
                             ))
                 ) {
-                    projects.forEach { project ->
-                        ProjectItem(project = project, onClick = toCodeEditor)
+                    viewModel.projects.forEach { project ->
+                        ProjectItem(project = project, onClick = { project ->
+                            viewModel.openProject(project.name, project.path)
+                            toCodeEditor()
+                        })
                     }
                 }
             }
