@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import project.OnProjectClosed
 import project.WelcomePacket
 import project.list.GetProjectsList
 import project.list.ProjectsListResponse
@@ -36,6 +37,7 @@ object ApiJson {
 
             polymorphic(Event::class) {
                 subclass(WelcomePacket::class)
+                subclass(OnProjectClosed::class)
             }
         }
     }
