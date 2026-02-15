@@ -56,7 +56,7 @@ class LocalWebSocketServer : Disposable {
 
     var isServerStarted: Boolean = false
 
-    private val handler: Handler by lazy { Handler() }
+    private val handler by lazy { Handler.getInstance() }
 
     private val version: String by lazy {
         val pluginId = PluginId.getId("com.kracubo.remotepycharm")
@@ -192,6 +192,20 @@ class LocalWebSocketServer : Disposable {
             currentSession = null
             Logger.log("Connection closed: $hostAddress", SenderType.LOCAL_SERVER)
         }
+    }
+
+    suspend fun sendEventPacket(packet: Event) : Boolean? {
+        return if (currentSession != null && currentSession?.isActive == true) {
+            val message = ApiJson.instance.encodeToString<Event>(packet)
+            currentSession?.send(message)
+
+            Logger.log(
+                "Packet sent: \n${message.prettyJson()}",
+                SenderType.LOCAL_SERVER
+            )
+
+            true
+        } else false
     }
 
     override fun dispose() {

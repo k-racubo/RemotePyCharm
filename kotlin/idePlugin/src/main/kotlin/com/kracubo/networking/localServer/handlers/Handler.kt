@@ -1,16 +1,19 @@
 package com.kracubo.networking.localServer.handlers
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.kracubo.core.project.CoreProjectManager
 import com.kracubo.core.project.ProjectRunner
 import com.kracubo.core.project.ProjectStructureProvider
+import com.kracubo.networking.localServer.LocalWebSocketServer
 import core.ApiJson
 import core.Command
 import core.ErrorResponse
 import core.Response
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import project.OnProjectClosed
 import project.list.GetProjectsList
 import project.open.OpenProjectCommand
 import project.open.ProjectFileTreeResponse
@@ -18,7 +21,10 @@ import project.list.ProjectsListResponse
 import project.run.ResultOfRunResponse
 import project.run.RunCurrentConfigCommand
 
+@Service(Service.Level.APP)
 class Handler {
+
+    companion object { fun getInstance() = service<Handler>() }
 
     suspend fun resolve(message: String): Response {
         val projectManager = CoreProjectManager.getInstance()
@@ -29,7 +35,6 @@ class Handler {
                     ProjectsListResponse(
                         apiMessage.requestId,
                         true,
-
                         projectManager.getProjects(),
                         projectManager.getCurrentProjectInfo()
                     )
@@ -102,5 +107,9 @@ class Handler {
                 "Handler error: ${e.message}"
             )
         }
+    }
+
+    suspend fun sendOnClosedProjectEvent() {
+        LocalWebSocketServer.getInstance().sendEventPacket(OnProjectClosed())
     }
 }
