@@ -1,6 +1,9 @@
 package com.kracubo.app
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +32,19 @@ class CodeEditorActivity: ComponentActivity() {
                             ProjectsList { navController.navigate("CodeEditor") }
                         }
                         composable("CodeEditor") {
-                            CodeEditorScreen()
+                            CodeEditorScreen(
+                                onNavigateToMainMenu = {
+                                    Toast.makeText(context, "Project was closed in plugin", Toast.LENGTH_SHORT).show()
+
+                                    val intent = Intent(context, MainActivity::class.java).apply {
+                                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    }
+                                    context.startActivity(intent)
+
+                                    (context as? Activity)?.finish()
+                                }
+                            )
                         }
                     }
                 }
