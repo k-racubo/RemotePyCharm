@@ -23,11 +23,24 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CodeEditorScreen() {
+fun CodeEditorScreen(
+    onNavigateToMainMenu: () -> Unit
+) {
+    val viewmodel: CodeEditorViewModel = viewModel()
+
+    LaunchedEffect(viewmodel.onProjectDownOnServer) {
+        if (viewmodel.onProjectDownOnServer) {
+            viewmodel.onProjectDownOnServer = false
+            onNavigateToMainMenu()
+        }
+    }
+
     var drawerOpen by remember { mutableStateOf(false) }
     var showTerminal by remember { mutableStateOf(false) }
     var currentFile by remember { mutableStateOf("python_file.py") }
