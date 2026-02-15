@@ -76,7 +76,7 @@ async def factorial(name, number):
                     onSearchClick = { /* poisk huini */ }
                 )
             }
-        ) {
+        ) { paddingValues -> //Короче нахуй желательно не трогать
             Column(modifier = Modifier.fillMaxSize()) {
                 CodeEditor(
                     code = codeContent,
@@ -85,7 +85,8 @@ async def factorial(name, number):
                         .weight(if (showTerminal) 1f else 1f)
                         .fillMaxWidth()
                 )
-
+                // че за нахуй почему здесь ошибки высвечиваются
+                    // разберусь потом кароч
 
                 if (showTerminal) {
                     TerminalView(
