@@ -61,6 +61,13 @@ class CodeEditorActivity: ComponentActivity() {
                                     context.startActivity(intent)
 
                                     (context as? Activity)?.finish()
+                                },
+                                navigateToProjectsListScreen = {
+                                    navController.navigate("ListProjects") {
+                                        popUpTo("CodeEditor") {
+                                            inclusive = true
+                                        }
+                                    }
                                 }
                             )
                         }
