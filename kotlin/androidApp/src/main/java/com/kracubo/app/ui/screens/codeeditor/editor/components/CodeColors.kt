@@ -1,4 +1,4 @@
-package com.kracubo.app.ui.screens.codeeditor.editor
+package com.kracubo.app.ui.screens.codeeditor.editor.components
 
 import androidx.compose.ui.graphics.Color
 
@@ -13,4 +13,3 @@ object CodeColors {
     val BottomBarBackground = Color(0xFF020617)
     val ButtonBackground = Color(0xFF1E293B)
 }
-

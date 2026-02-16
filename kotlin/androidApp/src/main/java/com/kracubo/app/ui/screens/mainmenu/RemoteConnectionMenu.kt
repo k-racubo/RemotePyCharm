@@ -40,18 +40,19 @@ import com.kracubo.app.ui.theme.TextColor
 
 @Composable
 fun RemoteScreen(
-    Connection: () -> Unit,
-    Exit: () -> Unit
+    connection: () -> Unit,
+    exit: () -> Unit
 ) {
     var serverIp by remember { mutableStateOf("") }
     var serverPort by remember { mutableStateOf("") }
     var authToken by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
         IconButton(
-            onClick = { Exit() },
+            onClick = { exit() },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
@@ -126,7 +127,7 @@ fun RemoteScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { Connection() },
+                onClick = { connection() },
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
                     .height(50.dp),

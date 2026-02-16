@@ -1,4 +1,4 @@
-package com.kracubo.app.core.extenssions
+package com.kracubo.app.core.extensions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

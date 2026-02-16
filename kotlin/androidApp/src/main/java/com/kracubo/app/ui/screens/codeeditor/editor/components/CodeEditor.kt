@@ -1,4 +1,4 @@
-package com.kracubo.app.ui.screens.codeeditor.editor
+package com.kracubo.app.ui.screens.codeeditor.editor.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
