@@ -1,4 +1,4 @@
-package com.kracubo.app.ui.screens.codeeditor.editor
+package com.kracubo.app.ui.screens.codeeditor.editor.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

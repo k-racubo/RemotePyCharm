@@ -3,6 +3,7 @@ package com.kracubo.app
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,8 +51,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("RemoteScreen") {
                             RemoteScreen(
-                                Connection = {},
-                                Exit = {
+                                connection = {
+                                    Toast.makeText(context, "Feature in dev", Toast.LENGTH_SHORT)
+                                        .show()
+                                },
+                                exit = {
                                     navController.navigate("main"){
                                         popUpTo("RemoteScreen"){
                                             inclusive = true
