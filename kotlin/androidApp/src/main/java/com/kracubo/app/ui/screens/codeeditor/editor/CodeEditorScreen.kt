@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kracubo.app.core.extenssions.OnDisconnectEffect
 import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -32,11 +33,11 @@ import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 fun CodeEditorScreen(
     onNavigateToMainMenu: () -> Unit
 ) {
-    val viewmodel: CodeEditorViewModel = viewModel()
+    val viewModel: CodeEditorViewModel = viewModel()
 
-    LaunchedEffect(viewmodel.onProjectDownOnServer) {
-        if (viewmodel.onProjectDownOnServer) {
-            viewmodel.onProjectDownOnServer = false
+    LaunchedEffect(viewModel.onProjectDownOnServer) {
+        if (viewModel.onProjectDownOnServer) {
+            viewModel.onProjectDownOnServer = false
             onNavigateToMainMenu()
         }
     }
