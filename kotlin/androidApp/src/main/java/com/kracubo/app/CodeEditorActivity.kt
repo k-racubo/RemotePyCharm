@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -24,12 +25,29 @@ class CodeEditorActivity: ComponentActivity() {
         actionBar?.hide()
         setContent {
             val context = LocalContext.current
+            val navController = rememberNavController()
+
+            BackHandler(
+                enabled = navController.currentDestination?.route != "ListProjects"
+            ) {
+
+            }
+
             AppTheme() {
                 Surface(Modifier.fillMaxSize()) {
-                    val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "ListProjects") {
                         composable("ListProjects"){
-                            ProjectsList { navController.navigate("CodeEditor") }
+                            ProjectsList(
+                                { navController.navigate("CodeEditor") },
+                                {
+                                    val intent = Intent(context, MainActivity::class.java).apply {
+                                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    }
+                                    context.startActivity(intent)
+
+                                    (context as? Activity)?.finish()
+                                })
                         }
                         composable("CodeEditor") {
                             CodeEditorScreen(
