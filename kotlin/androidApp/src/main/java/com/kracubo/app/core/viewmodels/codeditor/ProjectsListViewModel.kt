@@ -4,13 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.networking.handlers.Handler
 import kotlinx.coroutines.launch
 import project.list.ProjectInfo
 
-class ProjectsListViewModel : ViewModel() {
+class ProjectsListViewModel : BaseViewModel() {
 
     private val colors = listOf(
         Color(0xFF4CAF50),
@@ -45,6 +44,8 @@ class ProjectsListViewModel : ViewModel() {
             )
         } ?: emptyList()
     }
+
+    fun closeCurrentProject() { viewModelScope.launch { Handler.closeCurrentProject() } }
 
     fun openProject(projectName: String, projectPath: String) {
         viewModelScope.launch {
