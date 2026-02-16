@@ -9,6 +9,7 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import project.OnProjectClosed
 import project.WelcomePacket
+import project.close.CloseProjectCommand
 import project.list.GetProjectsList
 import project.list.ProjectsListResponse
 import project.open.OpenProjectCommand
@@ -31,6 +32,7 @@ object ApiJson {
                 subclass(GetFileContent::class)
                 subclass(OpenProjectCommand::class)
                 subclass(RunCurrentConfigCommand::class)
+                subclass(CloseProjectCommand::class)
             }
 
             polymorphic(Response::class) {
