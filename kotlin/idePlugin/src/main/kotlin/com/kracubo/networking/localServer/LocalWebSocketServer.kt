@@ -9,6 +9,7 @@ import com.intellij.openapi.extensions.PluginId
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.core.project.CoreProjectManager
 import com.kracubo.events.localServer.ServerDownTopics
 import com.kracubo.events.localServer.UnexpectedServerDown
 import com.kracubo.extensions.prettyJson
@@ -175,7 +176,7 @@ class LocalWebSocketServer : Disposable {
                     }
 
                     session.launch {
-                        val response = handler.resolve(text)
+                        val response = handler.resolve(text) ?: return@launch
 
                         val responseString = ApiJson.instance.encodeToString(response)
 
@@ -192,6 +193,7 @@ class LocalWebSocketServer : Disposable {
             }
         } finally {
             currentSession = null
+            CoreProjectManager.getInstance().closeProject()
             Logger.log("Connection closed: $hostAddress", SenderType.LOCAL_SERVER)
         }
     }
