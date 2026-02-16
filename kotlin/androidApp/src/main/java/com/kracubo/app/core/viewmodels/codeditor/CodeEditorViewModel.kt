@@ -3,10 +3,9 @@ package com.kracubo.app.core.viewmodels.codeditor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.kracubo.app.core.networking.handlers.Handler
 
-class CodeEditorViewModel : ViewModel() {
+class CodeEditorViewModel : BaseViewModel() {
     var onProjectDownOnServer by mutableStateOf(false)
 
     init {
