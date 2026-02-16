@@ -17,6 +17,7 @@ import file.GetFileContent
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import project.OnProjectClosed
+import project.close.CloseProjectCommand
 import project.list.GetProjectsList
 import project.open.OpenProjectCommand
 import project.open.ProjectFileTreeResponse
@@ -29,7 +30,7 @@ class Handler {
 
     companion object { fun getInstance() = service<Handler>() }
 
-    suspend fun resolve(message: String): Response {
+    suspend fun resolve(message: String): Response? {
         val projectManager = CoreProjectManager.getInstance()
 
         return try {
@@ -84,6 +85,10 @@ class Handler {
                             )
                         }
                     )
+                }
+                is CloseProjectCommand -> {
+                    projectManager.closeProject()
+                    null
                 }
                 is GetFileContent -> {
                     projectManager.runWithProject(
