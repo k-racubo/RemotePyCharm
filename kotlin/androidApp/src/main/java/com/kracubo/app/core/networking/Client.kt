@@ -72,7 +72,6 @@ object Client {
             currentSession?.close(CloseReason(CloseReason.Codes.NORMAL,
                 "User initiated disconnect"))
             currentSession = null
-            println("Disconnected by user")
         }
     }
 
@@ -115,7 +114,8 @@ object Client {
             }
             currentSession?.cancel()
             currentSession = null
-            // disconnect
+
+            Handler.onDisconnect()
         }
     }
 
