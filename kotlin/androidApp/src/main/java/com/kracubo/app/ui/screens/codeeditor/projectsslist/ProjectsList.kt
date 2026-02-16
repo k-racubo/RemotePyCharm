@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kracubo.app.R
+import com.kracubo.app.core.extenssions.OnDisconnectEffect
 import com.kracubo.app.core.viewmodels.codeditor.ProjectsListViewModel
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
@@ -39,8 +41,10 @@ import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
 
 
 @Composable
-fun ProjectsList(toCodeEditor: () -> Unit) {
+fun ProjectsList(toCodeEditor: () -> Unit, toMainMenu: () -> Unit) {
     val viewModel: ProjectsListViewModel = viewModel()
+
+    viewModel.OnDisconnectEffect(toMainMenu)
 
     Column(
         modifier = Modifier
@@ -113,6 +117,7 @@ fun ProjectsList(toCodeEditor: () -> Unit) {
                 ) {
                     viewModel.projects.forEach { project ->
                         ProjectItem(project = project, onClick = { project ->
+                            viewModel.closeCurrentProject()
                             viewModel.openProject(project.name, project.path)
                             toCodeEditor()
                         })
