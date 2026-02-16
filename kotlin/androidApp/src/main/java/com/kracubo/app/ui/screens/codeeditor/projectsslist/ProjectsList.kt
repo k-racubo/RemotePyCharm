@@ -1,5 +1,6 @@
 package com.kracubo.app.ui.screens.codeeditor.projectsslist
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,10 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kracubo.app.R
-import com.kracubo.app.core.extenssions.OnDisconnectEffect
+import com.kracubo.app.core.extensions.OnDisconnectEffect
 import com.kracubo.app.core.viewmodels.codeditor.ProjectsListViewModel
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
@@ -126,6 +128,20 @@ fun ProjectsList(toCodeEditor: () -> Unit, toMainMenu: () -> Unit) {
             }
         }
 
+        Spacer(modifier = Modifier.height(32.dp))
+
+        OutlinedButton(
+            onClick = { toMainMenu() },
+            modifier = Modifier.fillMaxWidth(0.65f)
+                .align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            ),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        ) {
+            Text(text = "Disconnect from server")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
