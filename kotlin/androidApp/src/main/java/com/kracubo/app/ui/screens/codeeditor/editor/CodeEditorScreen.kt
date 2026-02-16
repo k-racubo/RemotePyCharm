@@ -1,6 +1,5 @@
 package com.kracubo.app.ui.screens.codeeditor.editor
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.animation.*
@@ -19,32 +17,38 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kracubo.app.core.extenssions.OnDisconnectEffect
+import com.kracubo.app.core.extensions.OnDisconnectEffect
 import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
+import com.kracubo.app.ui.screens.codeeditor.editor.components.BottomNavigationBar
+import com.kracubo.app.ui.screens.codeeditor.editor.components.CodeEditor
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodeEditorScreen(
-    onNavigateToMainMenu: () -> Unit
+    onNavigateToMainMenu: () -> Unit,
+    navigateToProjectsListScreen: () -> Unit
 ) {
     val viewModel: CodeEditorViewModel = viewModel()
+
+    viewModel.OnDisconnectEffect(onNavigateToMainMenu)
 
     LaunchedEffect(viewModel.onProjectDownOnServer) {
         if (viewModel.onProjectDownOnServer) {
             viewModel.onProjectDownOnServer = false
-            onNavigateToMainMenu()
+            navigateToProjectsListScreen()
         }
     }
 
     var drawerOpen by remember { mutableStateOf(false) }
+
     var showTerminal by remember { mutableStateOf(false) }
+
     var currentFile by remember { mutableStateOf("python_file.py") }
+
     var codeContent by remember { mutableStateOf(
         """import asyncio
 
@@ -87,28 +91,28 @@ async def factorial(name, number):
                 )
             },
             bottomBar = {
-                BottomNavigationBar(
-                    onTerminalClick = { showTerminal = !showTerminal },
-                    onSearchClick = { /* poisk huini */ }
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BottomNavigationBar(
+                        onTerminalClick = { showTerminal = !showTerminal },
+                        onSearchClick = { /* poisk huini */ }
+                    )
+                }
             }
-        ) {
+        ) { paddingValues ->
             Column(modifier = Modifier.fillMaxSize()) {
                 CodeEditor(
                     modifier = Modifier
                         .weight(if (showTerminal) 1f else 1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(top = paddingValues.calculateTopPadding()),
                     code = codeContent,
                     onCodeChange = { codeContent = it }
                 )
 
-                if (showTerminal) {
-                    TerminalView(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.35f)
-                    )
-                }
             }
         }
 
@@ -296,114 +300,3 @@ fun FileTreeItem(
     }
 }
 
-@Composable
-fun TerminalView(modifier: Modifier = Modifier) {
-    val scrollState = rememberScrollState()
-
-    Surface(
-        modifier = modifier,
-        color = Color(0xFF1E1E1E)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .verticalScroll(scrollState)
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "(.venv) ",
-                    fontSize = 12.sp,
-                    color = Color(0xFF4CAF50), // Green for venv
-                    fontFamily = FontFamily.Monospace
-                )
-                Text(
-                    text = "user@Users-MacBook-Air",
-                    fontSize = 12.sp,
-                    color = Color(0xFF858585),
-                    fontFamily = FontFamily.Monospace
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "ProjectFolder",
-                    fontSize = 12.sp,
-                    color = Color(0xFF64B5F6), // Light blue for folder
-                    fontFamily = FontFamily.Monospace
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "% ",
-                    fontSize = 12.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily.Monospace
-                )
-
-                Text(
-                    text = "▋",
-                    fontSize = 12.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily.Monospace
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun BottomNavigationBar(
-    onTerminalClick: () -> Unit,
-    onSearchClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Color.White,
-        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .clickable(onClick = onTerminalClick)
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    Text(
-                        text = ">",
-                        color = Color(0xFF2B2B2B),
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "_",
-                        color = Color(0xFF2B2B2B),
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily.Monospace
-                    )
-                }
-            }
-
-            IconButton(onClick = onSearchClick) {
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = Color(0xFF2B2B2B)
-                )
-            }
-        }
-    }
-}
-// бля ебаный секс нахуй меня ы очко будто тра=алли, мб нахуй переписать опять все но вроде норм
-//надл доработать дизайн и не только
