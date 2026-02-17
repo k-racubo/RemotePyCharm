@@ -1,6 +1,5 @@
 package com.kracubo.app.ui.screens.codeeditor.projectsslist
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,9 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,6 +37,7 @@ import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
 import com.kracubo.app.ui.customscrollbar.rememberScrollbarState
 import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
+
 
 
 @Composable
@@ -128,20 +126,6 @@ fun ProjectsList(toCodeEditor: () -> Unit, toMainMenu: () -> Unit) {
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedButton(
-            onClick = { toMainMenu() },
-            modifier = Modifier.fillMaxWidth(0.65f)
-                .align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.primary
-            ),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-        ) {
-            Text(text = "Disconnect from server")
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
