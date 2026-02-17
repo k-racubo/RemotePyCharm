@@ -13,10 +13,15 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -151,6 +156,40 @@ async def factorial(name, number):
                 }
             }
         }
+
+        if(showTerminal){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(Color(0xFF242425))
+                    .align(Alignment.BottomCenter)
+            ) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color.Gray
+                )
+                Column(Modifier.fillMaxWidth().fillMaxHeight(0.15f).padding(top = 1.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Arrow Down",
+                        tint = Color.White,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "(.venv) user@Users-MacBook-Air\nProjectFolder\n% ",
+                        color = Color.White,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -268,7 +307,7 @@ fun FileTree(onFileSelected: (String) -> Unit) {
 
 @Composable
 fun FileTreeItem(
-    name: String,
+     name: String,
     isFolder: Boolean,
     isExpanded: Boolean = false,
     indent: Int = 0,
