@@ -101,10 +101,10 @@ async def factorial(name, number):
                         .padding(bottom = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    BottomNavigationBar(
-                        onTerminalClick = { showTerminal = !showTerminal },
-                        onSearchClick = { /* poisk huini */ }
-                    )
+                        BottomNavigationBar(
+                            onTerminalClick = { showTerminal = !showTerminal },
+                            onSearchClick = { /* poisk huini */ }
+                        )
                 }
             }
         ) { paddingValues ->
@@ -169,7 +169,7 @@ async def factorial(name, number):
                     thickness = 1.dp,
                     color = Color.Gray
                 )
-                Column(Modifier.fillMaxWidth().fillMaxHeight(0.15f).padding(top = 1.dp).clickable(onClick = {showTerminal = !showTerminal})) {
+                Column(Modifier.fillMaxWidth().height(25.dp).padding(top = 1.dp).clickable(onClick = {showTerminal = !showTerminal})) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
                         contentDescription = "Arrow Down",
@@ -180,7 +180,9 @@ async def factorial(name, number):
                         thickness = 1.dp,
                         color = Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Spacer(Modifier.height(4.dp))
+                Column(Modifier.fillMaxWidth().fillMaxHeight(0.80f).padding(top = 31.dp)){
                     Text(
                         text = "(.venv) user@Users-MacBook-Air\nProjectFolder\n% ",
                         color = Color.White,
