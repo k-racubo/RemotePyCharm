@@ -169,7 +169,7 @@ async def factorial(name, number):
                     thickness = 1.dp,
                     color = Color.Gray
                 )
-                Column(Modifier.fillMaxWidth().fillMaxHeight(0.15f).padding(top = 1.dp)) {
+                Column(Modifier.fillMaxWidth().fillMaxHeight(0.15f).padding(top = 1.dp).clickable(onClick = {showTerminal = !showTerminal})) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
                         contentDescription = "Arrow Down",
