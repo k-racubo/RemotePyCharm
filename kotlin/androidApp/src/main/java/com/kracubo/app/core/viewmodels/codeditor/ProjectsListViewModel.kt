@@ -1,5 +1,6 @@
 package com.kracubo.app.core.viewmodels.codeditor
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,6 +36,7 @@ class ProjectsListViewModel : BaseViewModel() {
     private fun pickRandColor() : Color { return colors.random() }
 
     fun updateProjectList(projects: List<ProjectInfo>?) {
+        Log.e("huinya", "update nahui")
         this.projects = projects?.map { info ->
             Project(
                 initials = createInitials(info.projectName),
