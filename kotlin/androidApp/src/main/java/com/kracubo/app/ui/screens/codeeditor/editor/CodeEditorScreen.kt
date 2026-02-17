@@ -30,6 +30,7 @@ import com.kracubo.app.core.extensions.OnDisconnectEffect
 import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 import com.kracubo.app.ui.screens.codeeditor.editor.components.BottomNavigationBar
 import com.kracubo.app.ui.screens.codeeditor.editor.components.CodeEditor
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +53,8 @@ fun CodeEditorScreen(
 
     var showTerminal by remember { mutableStateOf(false) }
 
+    var isBlinkingTerminal by remember { mutableStateOf("■") }
+
     var currentFile by remember { mutableStateOf("python_file.py") }
 
     var codeContent by remember { mutableStateOf(
@@ -67,7 +70,14 @@ async def factorial(name, number):
     return f
 """
     ) }
-
+    LaunchedEffect(showTerminal) {
+        while(true){
+            isBlinkingTerminal = ""
+            delay(750)
+            isBlinkingTerminal = "■"
+            delay(750)
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
@@ -185,6 +195,12 @@ async def factorial(name, number):
                 Column(Modifier.fillMaxWidth().fillMaxHeight(0.80f).padding(top = 31.dp)){
                     Text(
                         text = "(.venv) user@Users-MacBook-Air\nProjectFolder\n% ",
+                        color = Color.White,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = isBlinkingTerminal,
                         color = Color.White,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 14.sp
