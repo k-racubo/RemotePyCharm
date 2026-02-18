@@ -21,6 +21,7 @@ import project.open.ProjectFileTreeResponse
 import project.list.ProjectsListResponse
 import project.run.ResultOfRunResponse
 import project.run.RunCurrentConfigCommand
+import project.run.StopCurrentConfigCommand
 
 @Service(Service.Level.APP)
 class Handler {
@@ -86,6 +87,17 @@ class Handler {
                 is CloseProjectCommand -> {
                     projectManager.closeProject()
                     null
+                }
+                is StopCurrentConfigCommand -> {
+                    projectManager.runWithProject(
+                        action = { project ->
+                            project.service<ProjectRunner>().stopCurrentConfig()
+                            null
+                        },
+                        onError = {
+                            null
+                        }
+                    )
                 }
                 else -> {
                     ErrorResponse(
