@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kracubo.app"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 36
         versionName = "1.0"
     }
@@ -47,6 +47,7 @@ dependencies {
     //jetbrains font
     implementation("androidx.compose.ui:ui:1.4.0")
     implementation("androidx.compose.material3:material3:1.0.0")
+    implementation(libs.composeMaterial)
     //libs for camera and qrcode
     val cameraVersion = "1.3.1"
     implementation("androidx.camera:camera-core:$cameraVersion")
