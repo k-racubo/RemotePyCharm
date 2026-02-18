@@ -30,7 +30,7 @@ class AuthTokenField(
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         maximumSize = JBUI.size(Int.MAX_VALUE, 50)
 
-        authTokenLabel = JBLabel("authToken:").apply {
+        authTokenLabel = JBLabel("AuthToken:").apply {
             font = JBUI.Fonts.label(14f)
             horizontalAlignment = SwingConstants.RIGHT
         }
@@ -84,5 +84,4 @@ class AuthTokenField(
         add(Box.createHorizontalStrut(5))
         add(Box.createHorizontalGlue())
     }
-
 }
