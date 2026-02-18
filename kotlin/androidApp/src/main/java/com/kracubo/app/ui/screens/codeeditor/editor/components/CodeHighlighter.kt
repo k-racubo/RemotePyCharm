@@ -18,6 +18,27 @@ private val kotlinKeywords = listOf(
     "continue", "do", "when", "typealias"
 )
 
+private val pythonKeywords = listOf(
+    "and", "as", "assert", "async", "await", "break", "class", "continue",
+    "def", "del", "elif", "else", "except", "False", "finally", "for",
+    "from", "global", "if", "import", "in", "is", "lambda", "None",
+    "nonlocal", "not", "or", "pass", "raise", "return", "True", "try",
+    "while", "with", "yield"
+)
+
+private val pythonBuiltins = listOf(
+    "abs", "all", "any", "ascii", "bin", "bool", "bytearray", "bytes",
+    "callable", "chr", "classmethod", "compile", "complex", "delattr",
+    "dict", "dir", "divmod", "enumerate", "eval", "exec", "filter",
+    "float", "format", "frozenset", "getattr", "globals", "hasattr",
+    "hash", "help", "hex", "id", "input", "int", "isinstance", "issubclass",
+    "iter", "len", "list", "locals", "map", "max", "memoryview", "min",
+    "next", "object", "oct", "open", "ord", "pow", "print", "property",
+    "range", "repr", "reversed", "round", "set", "setattr", "slice",
+    "sorted", "staticmethod", "str", "sum", "super", "tuple", "type",
+    "vars", "zip", "__import__", "asyncio", "sleep"
+)
+
 fun highlightKotlin(code: String): AnnotatedString {
     val builder = AnnotatedString.Builder(code)
 
@@ -53,6 +74,47 @@ fun highlightKotlin(code: String): AnnotatedString {
 
     // Типы (имена классов с заглавной буквы)
     highlight(Regex("\\b[A-Z][A-Za-z0-9_]*\\b"), CodeColors.Type)
+
+    return builder.toAnnotatedString()
+}
+
+fun highlightPython(code: String): AnnotatedString {
+    val builder = AnnotatedString.Builder(code)
+
+    fun highlight(regex: Regex, color: Color) {
+        regex.findAll(code).forEach { matchResult ->
+            builder.addStyle(
+                SpanStyle(color = color),
+                matchResult.range.first,
+                matchResult.range.last + 1
+            )
+        }
+    }
+
+    // Комментарии
+    highlight(Regex("#.*"), CodeColors.Comment)
+
+    // Строки (включая экранированные символы)
+    highlight(Regex("\"(\\\\.|[^\"])*\""), CodeColors.String)
+    highlight(Regex("'(\\\\.|[^'])*'"), CodeColors.String)
+    highlight(Regex("\"\"\"[\\s\\S]*?\"\"\""), CodeColors.String)
+    highlight(Regex("'''[\\s\\S]*?'''"), CodeColors.String)
+
+    // Числа
+    highlight(Regex("\\b\\d+(\\.\\d+)?\\b"), CodeColors.Number)
+
+    // Ключевые слова Python
+    pythonKeywords.forEach { keyword ->
+        highlight(Regex("\\b$keyword\\b"), CodeColors.Keyword)
+    }
+
+    // Встроенные функции (light blue)
+    pythonBuiltins.forEach { builtin ->
+        highlight(Regex("\\b$builtin\\b"), CodeColors.Function)
+    }
+
+    // Остальной текст - белый (переменные и т.д.)
+    // Это будет дефолтный цвет
 
     return builder.toAnnotatedString()
 }

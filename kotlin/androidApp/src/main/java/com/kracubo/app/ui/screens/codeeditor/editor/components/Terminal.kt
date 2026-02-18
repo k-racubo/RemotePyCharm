@@ -1,8 +1,15 @@
 package com.kracubo.app.ui.screens.codeeditor.editor.components
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.HorizontalDivider
@@ -21,8 +28,6 @@ fun Terminalscreen(isTerminal: Boolean, showTerminal: Boolean, isBlinkingTermina
     //кароч мои попытки вынести этот терминал в функцию,
     // пока что безуспешно
     //я устал уже и не хочу думать как состояния передать в качестве аргумента и обратиться к ним с целью его изменить
-    var showTerminal = showTerminal
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,7 +38,7 @@ fun Terminalscreen(isTerminal: Boolean, showTerminal: Boolean, isBlinkingTermina
             thickness = 1.dp,
             color = Color.Gray
         )
-        Column(Modifier.fillMaxWidth().height(25.dp).padding(top = 1.dp).clickable(onClick = { showTerminal = !showTerminal})) {
+        Column(Modifier.fillMaxWidth().height(25.dp).padding(top = 1.dp).clickable(onClick = {showTerminal = !showTerminal})) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "Arrow Down",
