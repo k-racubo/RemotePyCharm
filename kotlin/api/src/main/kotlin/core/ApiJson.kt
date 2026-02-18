@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import project.WelcomePacket
 import project.list.GetProjectsList
 import project.list.ProjectsListResponse
 import project.open.OpenProjectCommand
@@ -35,6 +36,10 @@ object ApiJson {
                 subclass(ResultOfRunResponse::class)
                 subclass(ErrorResponse::class)
                 subclass(FileContentResponse::class)
+            }
+
+            polymorphic(Event::class) {
+                subclass(WelcomePacket::class)
             }
         }
     }

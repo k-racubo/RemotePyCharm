@@ -3,64 +3,150 @@ package com.kracubo.app.core.nsdManager
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
+import android.os.ext.SdkExtensions
 import android.util.Log
+import androidx.annotation.RequiresExtension
+import java.util.concurrent.atomic.AtomicBoolean
 
-
-class NsdHelper(private val context: Context) {
-
+class NsdHelper(val context: Context) {
     private val nsdManager: NsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
+    // flag for old resolveService()
+    private val isResolving = AtomicBoolean(false)
+
+    private var isDiscoveryActive = AtomicBoolean(false)
+
+    private val serviceInfoCallback = if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) &&
+            SdkExtensions.getExtensionVersion(Build.VERSION_CODES.TIRAMISU) >= 7) {
+        object : NsdManager.ServiceInfoCallback {
+            override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
+                Log.e("NsdHelper", "Callback registration failed: $errorCode")
+            }
+
+            override fun onServiceUpdated(serviceInfo: NsdServiceInfo) {
+                // Вот здесь теперь прилетают актуальные IP и Port
+                handleResolvedService(serviceInfo)
+            }
+
+            override fun onServiceLost() {
+                Log.i("NsdHelper", "Service is no longer available")
+            }
+
+            override fun onServiceInfoCallbackUnregistered() {
+                Log.i("NsdHelper", "Callback unregistered")
+            }
+        }
+    } else null
+
+    private val discoveryListener = object : NsdManager.DiscoveryListener {
+        override fun onDiscoveryStarted(regType: String?) {
+            isDiscoveryActive.set(true)
+            Log.i("NsdHelper", "Discovery started")
+        }
+
+        @RequiresExtension(extension = Build.VERSION_CODES.TIRAMISU, version = 7)
+        override fun onServiceFound(serviceInfo: NsdServiceInfo?) {
+            Log.i("NsdHelper", "Service found: ${serviceInfo?.serviceName}")
+
+            if (!isResolving.compareAndSet(false,true)) {
+                Log.w("NsdHelper", "Resolve already in progress, skipping...")
+                return
+            }
+
+            serviceInfo?.let { it ->
+                if (serviceInfoCallback != null) {
+                    nsdManager.registerServiceInfoCallback(it, { it.run() }, serviceInfoCallback)
+                } else {
+                    // depricated cause old (but usable for old android versions)
+                    nsdManager.resolveService(it, object : NsdManager.ResolveListener {
+                        override fun onServiceResolved(resolvedInfo: NsdServiceInfo) {
+                            isResolving.set(false)
+                            handleResolvedService(resolvedInfo)
+                        }
+
+                        override fun onResolveFailed(si: NsdServiceInfo, errorCode: Int) {
+                            isResolving.set(false)
+                            listener?.onError()
+                        }
+                    })
+                }
+            }
+        }
+
+        override fun onServiceLost(serviceInfo: NsdServiceInfo?) {
+            Log.e("NsdHelper", "Service lost: ${serviceInfo?.serviceName}")
+        }
+
+        override fun onDiscoveryStopped(serviceType: String?) {
+            isDiscoveryActive.set(false)
+            Log.i("NsdHelper", "Discovery stopped")
+        }
+
+        override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
+            isDiscoveryActive.set(false)
+            Log.e("NsdHelper", "Start discovery failed: $errorCode")
+            listener?.onError()
+        }
+
+        override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
+            Log.e("NsdHelper", "Stop discovery failed: $errorCode")
+            listener?.onError()
+        }
+    }
+
     interface DiscoveryListener {
-        fun onServiceFound()
+        fun onServiceFound(ip: String, port: Int)
         fun onError()
     }
 
     var listener: DiscoveryListener? = null
 
-    fun discoverServices() {
-        val serviceType = "_remotepycharm._tcp"
-        nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, object : NsdManager.DiscoveryListener {
-            override fun onDiscoveryStarted(regType: String?) {
-                Log.i("NsdHelper", "Discovery started")
+    fun discoverService() {
+        stopDiscovery()
+
+        nsdManager.discoverServices("_remotepycharm._tcp", NsdManager.PROTOCOL_DNS_SD,
+            discoveryListener)
+    }
+
+    fun stopDiscovery() {
+        if (!isDiscoveryActive.get()) return
+
+        try {
+            nsdManager.stopServiceDiscovery(discoveryListener)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && serviceInfoCallback != null) {
+                nsdManager.unregisterServiceInfoCallback(serviceInfoCallback)
             }
 
-            override fun onServiceFound(serviceInfo: NsdServiceInfo?) {
-                Log.i("NsdHelper", "Service found: ${serviceInfo?.serviceName}")
-                serviceInfo?.let {
-                    nsdManager.resolveService(it, object : NsdManager.ResolveListener {
-                        override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
-                            Log.e("NsdHelper", "Resolve failed: $errorCode")
-                            listener?.onError()
-                        }
+            Log.i("NsdHelper", "Discovery and callbacks stopped")
+        } catch (e: Exception) {
+            Log.e("NsdHelper", "Stop error: ${e.message}")
+        } finally {
+            isResolving.set(false)
+            isDiscoveryActive.set(false)
+        }
+    }
 
-                        override fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
-                            Log.i("NsdHelper", "Service resolved: ${serviceInfo?.serviceName}")
-                            val host = serviceInfo?.host?.hostAddress
-                            val port = serviceInfo?.port
-                            Log.i("NsdHelper", "Host: $host Port: $port")
-                            listener?.onServiceFound()
-                        }
-                    })
-                }
-            }
+    fun handleResolvedService(serviceInfo: NsdServiceInfo) {
+        val host = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            serviceInfo.hostAddresses.firstOrNull()?.hostAddress
+        } else {
+            @Suppress("DEPRECATION")
+            serviceInfo.host?.hostAddress
+        }
 
-            override fun onServiceLost(serviceInfo: NsdServiceInfo?) {
-                Log.e("NsdHelper", "Service lost: ${serviceInfo?.serviceName}")
-            }
+        val port = serviceInfo.port
 
-            override fun onDiscoveryStopped(serviceType: String?) {
-                Log.i("NsdHelper", "Discovery stopped")
-            }
+        context.getSharedPreferences("local_search_prefs", Context.MODE_PRIVATE).edit().apply {
+            putString("LOCAL_SEARCH_IP", host)
+            putInt("LOCAL_SEARCH_PORT", port)
+            apply()
+        }
 
-            override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
-                Log.e("NsdHelper", "Start discovery failed: $errorCode")
-                listener?.onError()
-            }
+        Log.i("NsdHelper", "Resolved IP: $host, Port: $port")
 
-            override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
-                Log.e("NsdHelper", "Stop discovery failed: $errorCode")
-                listener?.onError()
-            }
-        })
+        listener?.onServiceFound(host!!, port)
     }
 }
