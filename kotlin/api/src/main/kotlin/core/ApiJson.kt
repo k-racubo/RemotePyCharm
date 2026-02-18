@@ -16,6 +16,7 @@ import project.open.OpenProjectCommand
 import project.open.ProjectFileTreeResponse
 import project.run.ResultOfRunResponse
 import project.run.RunCurrentConfigCommand
+import project.run.StopCurrentConfigCommand
 
 object ApiJson {
     val instance = Json {
@@ -33,6 +34,7 @@ object ApiJson {
                 subclass(OpenProjectCommand::class)
                 subclass(RunCurrentConfigCommand::class)
                 subclass(CloseProjectCommand::class)
+                subclass(StopCurrentConfigCommand::class)
             }
 
             polymorphic(Response::class) {
