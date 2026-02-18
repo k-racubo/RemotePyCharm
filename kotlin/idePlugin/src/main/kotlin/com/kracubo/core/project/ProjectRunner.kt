@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionManager
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.execution.runners.ProgramRunner
@@ -19,12 +20,24 @@ import kotlin.coroutines.resume
 @Service(Service.Level.PROJECT)
 class ProjectRunner(val project: Project) {
 
+    private var currentProcessHandler: ProcessHandler? = null
+
     suspend fun runCurrentConfigAsync(): String = suspendCancellableCoroutine { continuation ->
         runCurrentConfig { fullLog ->
             if (continuation.isActive) { continuation.resume(fullLog) }
         }
     }
 
+
+    fun stopCurrentConfig() {
+        if (currentProcessHandler == null) {
+            Logger.log("ProjectRunner - current process handler = null. Can't stop process",
+                SenderType.LOCAL_SERVER, MessageType.ERROR)
+            return
+        }
+
+        currentProcessHandler?.destroyProcess()
+    }
 
     private fun runCurrentConfig(onFinished: (String) -> Unit) {
         val runManager = RunManager.getInstance(project)
@@ -46,6 +59,8 @@ class ProjectRunner(val project: Project) {
             environment.setCallback(object : ProgramRunner.Callback {
                 override fun processStarted(descriptor: RunContentDescriptor) {
                     val handler = descriptor.processHandler ?: return
+
+                    currentProcessHandler = handler
 
                     handler.addProcessListener(object : ProcessListener {
                         override fun onTextAvailable(event: ProcessEvent, outputType: com.intellij.openapi.util.Key<*>) {
