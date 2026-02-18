@@ -25,6 +25,7 @@ kotlinxCoroutines = "1.10.2"
 oldMaterialIcons = "1.7.7"
 
 mDNS = "3.6.3"
+composeMaterial = "1.5.6"
 
 [libraries]
 androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -57,6 +58,7 @@ kotlinxCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutine
 
 mDnsCore = { group = "org.jmdns", name = "jmdns", version.ref = "mDNS" }
 materialIconsOld = { group="androidx.compose.material" , name ="material-icons-core", version.ref = "oldMaterialIcons"}
+composeMaterial = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
