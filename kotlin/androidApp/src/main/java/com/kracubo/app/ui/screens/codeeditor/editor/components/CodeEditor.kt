@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
-import com.kracubo.app.ui.screens.codeeditor.editor.components.highlightPython
 
 @Composable
 fun CodeEditor(
@@ -35,22 +33,19 @@ fun CodeEditor(
         modifier = modifier
             .fillMaxSize()
             .background(CodeColors.Background)
+            .padding(8.dp)
     ) {
         // Номера строк
         Column(
-            modifier = Modifier
-                .width(50.dp)
-                .background(CodeColors.LineNumberBackground)
-                .padding(vertical = 8.dp, horizontal = 8.dp),
+            modifier = Modifier.padding(end = 8.dp),
             horizontalAlignment = End
         ) {
             lines.forEachIndexed { index, _ ->
                 Text(
                     text = "${index + 1}",
-                    color = CodeColors.LineNumberText,
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily.Monospace,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Monospace
                 )
             }
         }
@@ -63,10 +58,9 @@ fun CodeEditor(
                 onCodeChange(smartText)
             },
             textStyle = TextStyle(
-                color = CodeColors.Default, // Белый текст по умолчанию
+                color = Color.Transparent, // Прозрачный текст для видимости подсветки
                 fontSize = 14.sp,
-                fontFamily = FontFamily.Monospace,
-                lineHeight = 20.sp
+                fontFamily = FontFamily.Monospace
             ),
             modifier = Modifier
                 .fillMaxSize()
@@ -75,12 +69,11 @@ fun CodeEditor(
             decorationBox = { innerTextField ->
                 // Отображаем подсвеченный текст как фон
                 Text(
-                    text = highlightPython(code),
+                    text = highlightKotlin(code),
                     modifier = Modifier.fillMaxSize(),
                     style = TextStyle(
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
+                        fontSize = 14.sp
                     )
                 )
                 // Поле ввода поверх подсветки

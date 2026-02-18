@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color
-import com.kracubo.app.ui.screens.codeeditor.editor.components.CodeColors
+import com.kracubo.app.ui.theme.TextColor
+import com.kracubo.app.ui.theme.surface
 
 @Composable
 fun BottomNavigationBar(
@@ -33,8 +33,9 @@ fun BottomNavigationBar(
     Surface(
         modifier = Modifier.fillMaxWidth(0.85f)
             .wrapContentWidth(),
-        color = CodeColors.BottomBarBackground,
-        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+        color = surface,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, TextColor)
     ) {
         Row(
             modifier = Modifier
@@ -55,14 +56,14 @@ fun BottomNavigationBar(
                 ) {
                     Text(
                         text = ">",
-                        color = Color.White,
+                        color = TextColor,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "_",
-                        color = Color.White,
+                        color = TextColor,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.Monospace
                     )
@@ -73,7 +74,7 @@ fun BottomNavigationBar(
                 Icon(
                     Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = Color.White
+                    tint = TextColor
                 )
             }
         }
