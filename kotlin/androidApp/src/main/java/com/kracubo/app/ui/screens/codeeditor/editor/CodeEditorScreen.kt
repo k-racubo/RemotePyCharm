@@ -12,17 +12,23 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,6 +37,11 @@ import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 import com.kracubo.app.ui.screens.codeeditor.editor.components.BottomNavigationBar
 import com.kracubo.app.ui.screens.codeeditor.editor.components.CodeEditor
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.unit.IntOffset
+import com.kracubo.app.core.viewmodels.codeditor.FileNode
+import com.kracubo.app.core.viewmodels.codeditor.FileType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +60,7 @@ fun CodeEditorScreen(
         }
     }
 
-    var drawerOpen by remember { mutableStateOf(false) }
+    var newDrawerOpen by remember { mutableStateOf(false) }
 
     var showTerminal by remember { mutableStateOf(false) }
 
@@ -84,18 +95,32 @@ async def factorial(name, number):
                 TopAppBar(
                     title = { Text(currentFile, fontSize = 16.sp) },
                     navigationIcon = {
-                        IconButton(onClick = { drawerOpen = true }) {
+                        IconButton(onClick = { newDrawerOpen = true }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* ebani sex suka */ }) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Run",
-                                tint = Color(0xFF4CAF50), // Green color for play button
-                                modifier = Modifier.size(28.dp)
-                            )
+                        IconButton(onClick = {
+                            if (viewModel.isProjectRunning) {
+                                viewModel.stopProject()
+                            } else
+                                viewModel.runProject()
+                        }) {
+                            if (viewModel.isProjectRunning) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Stop",
+                                    tint = Color.Red,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Run",
+                                    tint = Color(0xFF4CAF50),
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -131,41 +156,15 @@ async def factorial(name, number):
             }
         }
 
-        AnimatedVisibility(
-            visible = drawerOpen,
-            enter = slideInHorizontally(
-                initialOffsetX = { -it },
-                animationSpec = tween(300)
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { -it },
-                animationSpec = tween(300)
-            )
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0x80000000))
-                    .clickable { drawerOpen = false }
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .width(280.dp)
-                        .fillMaxHeight()
-                        .align(Alignment.CenterStart),
-                    color = Color(0xFF2D2D30),
-                    shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp)
-                ) {
-                    FileTreeDrawerContent(
-                        onFileSelected = { fileName ->
-                            currentFile = fileName
-                            drawerOpen = false
-                        },
-                        onDismiss = { drawerOpen = false }
-                    )
-                }
+        NewProjectDrawer(
+            isOpen = newDrawerOpen,
+            vm = viewModel,
+            onClose = { newDrawerOpen = false },
+            onFileSelected = { fileName ->
+                currentFile = fileName
+                newDrawerOpen = false
             }
-        }
+        )
 
         if(showTerminal){
             Box(
@@ -211,149 +210,218 @@ async def factorial(name, number):
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileTreeDrawerContent(
-    onFileSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+fun NewProjectDrawer(
+    isOpen: Boolean,
+    vm: CodeEditorViewModel,
+    onClose: () -> Unit,
+    onFileSelected: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF2D2D30))
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "PythonProject1",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            IconButton(onClick = onDismiss) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = Color.White
-                )
-            }
-        }
+    val scope = rememberCoroutineScope()
+    var offsetX by remember { mutableStateOf(0f) }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        FileTree(
-            onFileSelected = onFileSelected
-        )
+    LaunchedEffect(isOpen) {
+        if (isOpen) offsetX = 0f
+        else offsetX = -300f
     }
-}
 
-@Composable
-fun FileTree(onFileSelected: (String) -> Unit) {
-    var expandedFolders by remember { mutableStateOf(setOf("ProjectFolder")) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+    AnimatedVisibility(
+        visible = isOpen,
+        enter = fadeIn(animationSpec = tween(200)),
+        exit = fadeOut(animationSpec = tween(200))
     ) {
-        FileTreeItem(
-            name = "ProjectFolder",
-            isFolder = true,
-            isExpanded = expandedFolders.contains("ProjectFolder"),
-            onClick = {
-                expandedFolders = if (expandedFolders.contains("ProjectFolder")) {
-                    expandedFolders - "ProjectFolder"
-                } else {
-                    expandedFolders + "ProjectFolder"
-                }
-            }
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val alpha = ((300f + offsetX) / 300f).coerceIn(0.5f, 1f) * 0.5f
 
-        if (expandedFolders.contains("ProjectFolder")) {
-            Spacer(modifier = Modifier.height(4.dp))
-            FileTreeItem(
-                name = "UsableFolder",
-                isFolder = true,
-                isExpanded = expandedFolders.contains("UsableFolder"),
-                indent = 1,
-                onClick = {
-                    expandedFolders = if (expandedFolders.contains("UsableFolder")) {
-                        expandedFolders - "UsableFolder"
-                    } else {
-                        expandedFolders + "UsableFolder"
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = alpha))
+                    .padding(start = 300.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 300.dp)
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = {
+                                if (offsetX < -150f) {
+                                    scope.launch {
+                                        animate(
+                                            initialValue = offsetX,
+                                            targetValue = -300f,
+                                            animationSpec = tween(150)
+                                        ) { value, _ -> offsetX = value }
+                                        onClose()
+                                    }
+                                } else {
+                                    scope.launch {
+                                        animate(
+                                            initialValue = offsetX,
+                                            targetValue = 0f,
+                                            animationSpec = tween(150)
+                                        ) { value, _ -> offsetX = value }
+                                    }
+                                }
+                            }
+                        ) { change, dragAmount ->
+                            change.consume()
+                            offsetX = (offsetX + dragAmount).coerceIn(-300f, 0f)
+                        }
+                    }
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        scope.launch {
+                            animate(
+                                initialValue = offsetX,
+                                targetValue = -300f,
+                                animationSpec = tween(150)
+                            ) { value, _ -> offsetX = value }
+                            onClose()
+                        }
+                    }
+            )
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(300.dp)
+                    .align(Alignment.CenterStart)
+                    .offset { IntOffset(offsetX.toInt(), 0) }
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = {
+                                if (offsetX < -150f) {
+                                    scope.launch {
+                                        animate(
+                                            initialValue = offsetX,
+                                            targetValue = -300f,
+                                            animationSpec = tween(150)
+                                        ) { value, _ -> offsetX = value }
+                                        onClose()
+                                    }
+                                } else {
+                                    scope.launch {
+                                        animate(
+                                            initialValue = offsetX,
+                                            targetValue = 0f,
+                                            animationSpec = tween(150)
+                                        ) { value, _ -> offsetX = value }
+                                    }
+                                }
+                            }
+                        ) { change, dragAmount ->
+                            change.consume()
+                            offsetX = (offsetX + dragAmount).coerceIn(-300f, 0f)
+                        }
+                    },
+                color = Color(0xFF2D2D30),
+                shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Project Files", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        IconButton(onClick = onClose) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                        }
+                    }
+
+                    Divider(color = Color.White.copy(alpha = 0.2f))
+
+                    val projectTree by vm.projectTree.collectAsState()
+
+                    projectTree?.let {
+                        FileTreeView(
+                            node = it,
+                            onFileSelected = { filePath ->
+                                onFileSelected(filePath)
+                                onClose()
+                            }
+                        )
                     }
                 }
-            )
-
-            if (expandedFolders.contains("UsableFolder")) {
-                Spacer(modifier = Modifier.height(4.dp))
-                FileTreeItem(
-                    name = "python_file.py",
-                    isFolder = false,
-                    indent = 2,
-                    onClick = { onFileSelected("python_file.py") }
-                )
-                FileTreeItem(
-                    name = "huila_file.py",
-                    isFolder = false,
-                    indent = 2,
-                    onClick = { onFileSelected("huila_file.py") }
-                )
-                FileTreeItem(
-                    name = "FolderHui",
-                    isFolder = true,
-                    isExpanded = false,
-                    indent = 2,
-                    onClick = { }
-                )
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-            FileTreeItem(
-                name = "UnusableFolder",
-                isFolder = true,
-                isExpanded = false,
-                indent = 1,
-                onClick = { }
-            )
         }
     }
 }
 
 @Composable
-fun FileTreeItem(
-     name: String,
-    isFolder: Boolean,
-    isExpanded: Boolean = false,
-    indent: Int = 0,
-    onClick: () -> Unit
+fun FileTreeView(
+    node: FileNode,
+    level: Int = 0,
+    onFileSelected: (String) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = (indent * 16).dp)
-            .padding(vertical = 4.dp)
-            .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically
+    var expanded by remember { mutableStateOf(level == 0) }
+
+    Column(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures { }
+        }
     ) {
-        // хАХАХ ебучие смайлики не хотите? а мне пох вид имеют
-        Text(
-            text = if (isFolder) {
-                if (isExpanded) "📂" else "📁"
-            } else {
-                "📄"
-            },
-            fontSize = 18.sp
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = name,
-            color = Color.White,
-            fontSize = 14.sp
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = (level * 20).dp)
+                .clickable {
+                    when (node.type) {
+                        FileType.FOLDER -> expanded = !expanded
+                        FileType.FILE -> onFileSelected(node.path)
+                    }
+                }
+                .padding(vertical = 8.dp, horizontal = 12.dp)
+        ) {
+            Icon(
+                imageVector = when (node.type) {
+                    FileType.FOLDER -> if (expanded) Icons.Default.PlayArrow else Icons.Default.PlayArrow
+                    FileType.FILE -> Icons.Default.Menu
+                },
+                contentDescription = null,
+                tint = when (node.type) {
+                    FileType.FOLDER -> Color(0xFF64B5F6)
+                    FileType.FILE -> Color.White.copy(alpha = 0.7f)
+                },
+                modifier = Modifier.size(20.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = node.name,
+                color = Color.White,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        if (expanded && node.type == FileType.FOLDER && !node.children.isNullOrEmpty()) {
+            node.children.forEach { child ->
+                FileTreeView(
+                    node = child,
+                    level = level + 1,
+                    onFileSelected = onFileSelected
+                )
+            }
+        }
     }
 }
-
