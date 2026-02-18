@@ -13,6 +13,9 @@ import project.close.CloseProjectCommand
 import project.list.GetProjectsList
 import project.list.ProjectsListResponse
 import project.open.OpenProjectCommand
+import project.open.ProjectFileTreeResponse
+import project.run.RunCurrentConfigCommand
+import project.run.StopCurrentConfigCommand
 import java.util.UUID
 
 object Handler {
@@ -22,6 +25,9 @@ object Handler {
         try {
             when (val apiMessage = ApiJson.instance.decodeFromString<Response>(message)) {
                 is ProjectsListResponse -> { (currentViewmodel as? ProjectsListViewModel)?.updateProjectList(apiMessage.projects) }
+                is ProjectFileTreeResponse -> {
+                    (currentViewmodel as? CodeEditorViewModel)?.updateProjectTree(apiMessage.fileTree)
+                }
                 else -> {}
             }
         } catch (_: Exception) {
@@ -46,6 +52,10 @@ object Handler {
     private fun generateUuid(): String = UUID.randomUUID().toString()
 
     fun onDisconnect() { (currentViewmodel as? BaseViewModel)?.onDisconnect() }
+
+    suspend fun runProject() { Client.sendPacket(RunCurrentConfigCommand(generateUuid())) }
+
+    suspend fun stopProject() { Client.sendPacket(StopCurrentConfigCommand(generateUuid())) }
 
     fun setCurrentViewmodel(viewmodel: ViewModel) { currentViewmodel = viewmodel }
 
