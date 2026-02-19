@@ -110,6 +110,9 @@ class Handler {
                                 "GET_FILE_CONTENT_FAILED",
                                 "Project not found for get file content"
                             )
+                        }
+                    )
+                }
                 is CloseProjectCommand -> {
                     projectManager.closeProject()
                     null
