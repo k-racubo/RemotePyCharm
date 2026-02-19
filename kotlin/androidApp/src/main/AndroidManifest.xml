@@ -8,8 +8,8 @@
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.CAMERA" />
     <application
-            android:icon="@drawable/dark_logo"
-            android:roundIcon="@drawable/dark_logo"
+            android:icon="@mipmap/dark_logo"
+            android:roundIcon="@mipmap/dark_logo"
             android:label="Remote PyCharm"
             android:supportsRtl="false"
             tools:targetApi="31"
