@@ -9,17 +9,27 @@ android {
     namespace = "com.kracubo.app"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(providers.gradleProperty("RELEASE_STORE_FILE").get())
+            storePassword = providers.gradleProperty("RELEASE_STORE_PASSWORD").get()
+            keyAlias = providers.gradleProperty("RELEASE_KEY_ALIAS").get()
+            keyPassword = providers.gradleProperty("RELEASE_KEY_PASSWORD").get()
+        }
+    }
+
     defaultConfig {
         applicationId = "com.kracubo.app"
         minSdk = 25
         targetSdk = 36
-        versionName = "1.0"
+        versionName = "1.0.0-Alpha"
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
