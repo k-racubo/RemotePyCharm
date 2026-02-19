@@ -128,6 +128,21 @@ class Handler {
                         }
                     )
                 }
+                is CloseProjectCommand -> {
+                    projectManager.closeProject()
+                    null
+                }
+                is StopCurrentConfigCommand -> {
+                    projectManager.runWithProject(
+                        action = { project ->
+                            project.service<ProjectRunner>().stopCurrentConfig()
+                            null
+                        },
+                        onError = {
+                            null
+                        }
+                    )
+                }
                 else -> {
                     ErrorResponse(
                         requestId = "unknown",
