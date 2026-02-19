@@ -12,6 +12,7 @@ import java.awt.GridLayout
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JButton
+import javax.swing.JOptionPane
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import kotlin.Unit
@@ -55,8 +56,20 @@ class RemoteServerButtonsCard(
 
             addActionListener {
                 Logger.log("\"Disconnect\" button action", SenderType.LOGGER)
-                // TODO create disconnect logic from remote server
-                isRemoteServerConnected = false // fucking заглушка
+
+                JOptionPane.showMessageDialog(
+                    this@RemoteServerButtonsCard,
+                    """
+                Remote server connection is not available yet.
+                
+                This feature is under development.
+                Please check back in the next release.
+            """.trimIndent(),
+                    "Coming soon",
+                    JOptionPane.INFORMATION_MESSAGE
+                )
+
+                isRemoteServerConnected = false
             }
         }
 
@@ -94,8 +107,18 @@ class RemoteServerButtonsCard(
 
             addActionListener {
                 Logger.log("\"Connect\" button action", SenderType.LOGGER)
-                // TODO create logic for remote connection
-                isRemoteServerConnected = true // fucking заглушка
+
+                JOptionPane.showMessageDialog(
+                    this@RemoteServerButtonsCard,
+                    """
+                Remote server connection is not available yet.
+                
+                This feature is under development.
+                Please check back in the next release.
+            """.trimIndent(),
+                    "Coming soon",
+                    JOptionPane.INFORMATION_MESSAGE
+                )
             }
         }
 

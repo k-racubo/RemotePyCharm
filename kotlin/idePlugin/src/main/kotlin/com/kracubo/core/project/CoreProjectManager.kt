@@ -94,7 +94,7 @@ class CoreProjectManager : Disposable {
             isNewProject = false
             projectName = null
             useDefaultProjectAsTemplate = false
-            showWelcomeScreen = false // - skip open project alert
+            showWelcomeScreen = false
         }
 
         TrustedProjects.setProjectTrusted(path, true)

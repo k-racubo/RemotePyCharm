@@ -3,6 +3,7 @@ package com.kracubo.networking.localServer.handlers
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.kracubo.core.file.FileManager
 import com.kracubo.core.project.CoreProjectManager
 import com.kracubo.core.project.ProjectRunner
 import com.kracubo.core.project.ProjectStructureProvider
@@ -11,6 +12,8 @@ import core.ApiJson
 import core.Command
 import core.ErrorResponse
 import core.Response
+import file.FileContentResponse
+import file.GetFileContent
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import project.OnProjectClosed
@@ -84,6 +87,29 @@ class Handler {
                         }
                     )
                 }
+                is GetFileContent -> {
+                    projectManager.runWithProject(
+                        action = { project ->
+                            val content = project.service<FileManager>().getFileContent(apiMessage.filePath)
+
+                            if (content.isEmpty()) {
+                                return@runWithProject ErrorResponse(
+                                    apiMessage.requestId,
+                                    false,
+                                    "GET_FILE_CONTENT_FAILED",
+                                    "VFS can't read or found file"
+                                    )
+                            }
+
+                            FileContentResponse(apiMessage.requestId, true, content)
+                        },
+                        onError = {
+                            ErrorResponse(
+                                apiMessage.requestId,
+                                false,
+                                "GET_FILE_CONTENT_FAILED",
+                                "Project not found for get file content"
+                            )
                 is CloseProjectCommand -> {
                     projectManager.closeProject()
                     null
