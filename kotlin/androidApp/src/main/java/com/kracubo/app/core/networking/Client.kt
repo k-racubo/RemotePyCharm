@@ -2,6 +2,7 @@ package com.kracubo.app.core.networking
 
 import com.kracubo.app.core.networking.handlers.Handler
 import core.ApiJson
+import core.Command
 import core.Event
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -16,11 +17,13 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import io.ktor.websocket.send
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import project.WelcomePacket
@@ -38,8 +41,6 @@ object Client {
     }
 
     private var currentSession: DefaultClientWebSocketSession? = null
-
-    private val handler: Handler by lazy { Handler() }
 
     suspend fun connect(ip: String, port: Int, token: String? = null) : Boolean {
         val connectionResult = CompletableDeferred<Boolean>()
@@ -71,7 +72,6 @@ object Client {
             currentSession?.close(CloseReason(CloseReason.Codes.NORMAL,
                 "User initiated disconnect"))
             currentSession = null
-            println("Disconnected by user")
         }
     }
 
@@ -109,12 +109,21 @@ object Client {
                 if (frame is Frame.Text) {
                     val text = frame.readText()
 
-
+                    Handler.resolve(text)
                 }
             }
             currentSession?.cancel()
             currentSession = null
-            // disconnect
+
+            Handler.onDisconnect()
         }
+    }
+
+    suspend fun sendPacket(request: Command) : Boolean? {
+        return if (currentSession != null && currentSession?.isActive == true) {
+            val requestStr = ApiJson.instance.encodeToString<Command>(request)
+            currentSession?.send(requestStr)
+            true
+        } else false
     }
 }

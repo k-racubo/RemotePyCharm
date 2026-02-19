@@ -1,4 +1,4 @@
-package com.kracubo.app.ui.screens.MainMenu
+package com.kracubo.app.ui.screens.mainmenu
 import android.annotation.SuppressLint
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy

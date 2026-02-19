@@ -7,13 +7,16 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import project.OnProjectClosed
 import project.WelcomePacket
+import project.close.CloseProjectCommand
 import project.list.GetProjectsList
 import project.list.ProjectsListResponse
 import project.open.OpenProjectCommand
 import project.open.ProjectFileTreeResponse
 import project.run.ResultOfRunResponse
 import project.run.RunCurrentConfigCommand
+import project.run.StopCurrentConfigCommand
 
 object ApiJson {
     val instance = Json {
@@ -28,6 +31,8 @@ object ApiJson {
                 subclass(OpenProjectCommand::class)
                 subclass(RunCurrentConfigCommand::class)
                 subclass(GetFileContent::class)
+                subclass(CloseProjectCommand::class)
+                subclass(StopCurrentConfigCommand::class)
             }
 
             polymorphic(Response::class) {
@@ -40,6 +45,7 @@ object ApiJson {
 
             polymorphic(Event::class) {
                 subclass(WelcomePacket::class)
+                subclass(OnProjectClosed::class)
             }
         }
     }

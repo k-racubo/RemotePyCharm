@@ -6,6 +6,7 @@ import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -15,6 +16,12 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.kracubo.controlPanel.logger.Logger
 import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
+import com.kracubo.networking.localServer.handlers.Handler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import project.list.ProjectInfo
 import java.nio.file.Paths
 
@@ -22,14 +29,26 @@ import java.nio.file.Paths
 @Service(Service.Level.APP)
 class CoreProjectManager : Disposable {
 
+    private var closedByCommand: Boolean = false
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     init {
         ApplicationManager.getApplication().messageBus.connect(this)
             .subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
                 override fun projectClosed(project: Project) {
                     if (project.basePath == activeProjectPath) {
-                        Logger.log("Active project was closed by user", SenderType.LOGGER, MessageType.WARNING)
+                        if (!closedByCommand) {
+                            Logger.log(
+                                "Project: closed in IDE plugin",
+                                SenderType.LOGGER, MessageType.WARNING
+                            )
+
+                            serviceScope.launch { Handler.getInstance().sendOnClosedProjectEvent() }
+                        }
                         activeProjectPath = null
                     }
+                    closedByCommand = false
                 }
             })
     }
@@ -43,6 +62,7 @@ class CoreProjectManager : Disposable {
         if (manager == null) {
             Logger.log("RecentProjectsManager is not RecentProjectsManagerBase instance",
                 SenderType.LOGGER, MessageType.ERROR)
+
             return null
         }
 
@@ -89,6 +109,20 @@ class CoreProjectManager : Disposable {
         Logger.log("Project: $pName is opened", SenderType.LOCAL_SERVER)
 
         activeProjectPath = projectPath
+    }
+
+    fun closeProject() {
+        val project = getActiveProject() ?: return
+
+        closedByCommand = true
+
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.EDT) {
+                project.let { ProjectManager.getInstance().closeAndDispose(it) }
+            }
+        }
+
+        Logger.log("Project: closed in mobile app", SenderType.LOCAL_SERVER)
     }
 
     private fun getActiveProject(): Project? {

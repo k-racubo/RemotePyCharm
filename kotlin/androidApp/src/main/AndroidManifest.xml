@@ -8,8 +8,8 @@
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.CAMERA" />
     <application
-            android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:icon="@drawable/dark_logo"
+            android:roundIcon="@drawable/dark_logo"
             android:label="Remote PyCharm"
             android:supportsRtl="false"
             tools:targetApi="31"
@@ -26,11 +26,6 @@
         <activity
             android:name=".CodeEditorActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
     </application>
 
