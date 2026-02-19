@@ -1,9 +1,12 @@
 package com.kracubo.app.ui.screens.codeeditor.projectsslist
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,6 +49,8 @@ import com.kracubo.app.ui.customscrollbar.verticalScrollWithScrollbar
 
 @Composable
 fun ProjectsList(toCodeEditor: () -> Unit, toMainMenu: () -> Unit) {
+    val context = LocalContext.current
+
     val viewModel: ProjectsListViewModel = viewModel()
 
     viewModel.OnDisconnectEffect(toMainMenu)
@@ -155,12 +161,16 @@ fun ProjectsList(toCodeEditor: () -> Unit, toMainMenu: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Contact support",
+                    text = "Contact Us",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/k_racubo"))
+                        context.startActivity(intent)
+                    },
                 )
                 Text(
-                    text = "v1.0.12",
+                    text = "v1.0.0-Alpha",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                 )
