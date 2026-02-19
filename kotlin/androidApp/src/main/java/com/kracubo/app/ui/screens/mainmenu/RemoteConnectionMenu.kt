@@ -161,7 +161,7 @@ fun RemoteScreen(
                 color = ButtonBorderColor,
                 fontSize = 14.sp,
                 modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/k_racubo"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Dasxer2008"))
                     context.startActivity(intent)
                 },
             )

@@ -170,7 +170,7 @@ fun MainScreen(onLocalScreen: () -> Unit,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                 modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/k_racubo"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Imchelovek09"))
                     context.startActivity(intent)
                 }
             )
