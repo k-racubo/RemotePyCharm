@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import com.kracubo.app.core.networking.handlers.Handler
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import project.list.ProjectInfo
 
@@ -27,6 +28,7 @@ class ProjectsListViewModel : BaseViewModel() {
         Handler.setCurrentViewmodel(this)
 
         viewModelScope.launch {
+            delay(100)
             Handler.getProjectsList()
         }
     }
@@ -36,7 +38,6 @@ class ProjectsListViewModel : BaseViewModel() {
     private fun pickRandColor() : Color { return colors.random() }
 
     fun updateProjectList(projects: List<ProjectInfo>?) {
-        Log.e("huinya", "update nahui")
         this.projects = projects?.map { info ->
             Project(
                 initials = createInitials(info.projectName),

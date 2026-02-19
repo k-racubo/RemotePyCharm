@@ -3,7 +3,7 @@ package com.kracubo.app.ui.screens.mainmenu
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.widget.Toast
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
-import com.kracubo.app.CodeEditorActivity
 import com.kracubo.app.R
 import com.kracubo.app.ui.customscrollbar.ColorType
 import com.kracubo.app.ui.customscrollbar.ScrollbarConfig
@@ -167,22 +166,16 @@ fun MainScreen(onLocalScreen: () -> Unit,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Contact support",
+                text = "Contact Us",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                modifier = Modifier.clickable(onClick = {
-                    //test hash reset function
-                    preferences.edit {
-                        remove("is_first_run").apply()
-                        remove("LOCAL_SEARCH_IP").apply()
-                        remove("LOCAL_SEARCH_PORT").apply()
-                    }
-                    Toast.makeText(context,"hash reset", Toast.LENGTH_LONG).show()
-                })
+                modifier = Modifier.clickable {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Imchelovek09"))
+                    context.startActivity(intent)
+                }
             )
             Text(
-                text = "v1.0.12",
-                Modifier.clickable(true, onClick = { context.startActivity(Intent(context, CodeEditorActivity::class.java))}),
+                text = "v1.0.0-Alpha",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
             )
