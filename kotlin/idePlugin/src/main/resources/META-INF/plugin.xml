@@ -1,0 +1,17 @@
+<idea-plugin>
+    <id>com.kracubo.remotepycharm</id>
+    <name>Remote PyCharm</name>
+    <vendor>KRACUBO</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij">
+
+
+        <toolWindow
+            id="Remote PyCharm Control panel"
+            anchor="right"
+            factoryClass="com.kracubo.toolwindow.ControlPanel"
+            doNotActivateOnStart="true"
+            secondary="false"/>
+    </extensions>
+</idea-plugin>

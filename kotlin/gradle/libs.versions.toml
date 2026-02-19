@@ -1,0 +1,73 @@
+# Version catalog is a central place for you to declare and version dependencies
+# https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
+# https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
+
+[versions]
+kotlin = "2.1.0"
+
+agp = "8.12.0"
+
+intellijPlatform = "2.7.1"
+
+androidxCore = "1.17.0"
+androidxLifecycle = "2.10.0"
+androidxActivity = "1.12.0"
+
+composeBom = "2025.11.01"
+
+androidxComposeNav = "2.9.6"
+activityKtx = "1.12.0"
+
+ktor = "3.1.2"
+kotlinxSerialization = "1.7.0"
+
+kotlinxCoroutines = "1.10.2"
+oldMaterialIcons = "1.7.7"
+
+mDNS = "3.6.3"
+composeMaterial = "1.5.6"
+
+[libraries]
+androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
+androidxLifecycle = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidxActivity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+androidxComposeBom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+
+androidxComposeUi = { module = "androidx.compose.ui:ui" }
+androidxComposeGraphics = { module = "androidx.compose.ui:ui-graphics" }
+androidxComposePreviewTooling = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidxComposeMaterial3 = { module = "androidx.compose.material3:material3" }
+
+androidxComposeNav = { module = "androidx.navigation:navigation-compose", version.ref = "androidxComposeNav" }
+activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+
+ktorCore = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
+ktorCio = { group = "io.ktor", name = "ktor-server-cio", version.ref = "ktor" }
+ktorWebsockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
+ktorContentNegotation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
+ktorClientContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktorClientWebsockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
+ktorCors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
+ktorClientCore = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktorClientCio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+
+kotlinxSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+ktorSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+kotlinxCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+
+mDnsCore = { group = "org.jmdns", name = "jmdns", version.ref = "mDNS" }
+materialIconsOld = { group="androidx.compose.material" , name ="material-icons-core", version.ref = "oldMaterialIcons"}
+composeMaterial = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+
+intellijPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
+
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+
