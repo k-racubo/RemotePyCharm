@@ -60,7 +60,7 @@ fun MainScreen(onLocalScreen: () -> Unit,
         Spacer(modifier = Modifier.height(40.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = painterResource(id = R.drawable.dark_logo),
+                painter = painterResource(id = R.mipmap.dark_logo),
                 contentDescription = "Logo",
                 modifier = Modifier.size(40.dp),
                 contentScale = ContentScale.Fit
