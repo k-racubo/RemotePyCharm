@@ -182,4 +182,3 @@ fun MainScreen(onLocalScreen: () -> Unit,
         }
     }
 }
-
