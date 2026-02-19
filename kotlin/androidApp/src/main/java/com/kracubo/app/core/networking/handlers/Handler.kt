@@ -8,12 +8,15 @@ import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 import core.ApiJson
 import core.Event
 import core.Response
+import file.FileContentResponse
+import file.GetFileContent
 import project.OnProjectClosed
 import project.close.CloseProjectCommand
 import project.list.GetProjectsList
 import project.list.ProjectsListResponse
 import project.open.OpenProjectCommand
 import project.open.ProjectFileTreeResponse
+import project.run.ResultOfRunResponse
 import project.run.RunCurrentConfigCommand
 import project.run.StopCurrentConfigCommand
 import java.util.UUID
@@ -27,6 +30,12 @@ object Handler {
                 is ProjectsListResponse -> { (currentViewmodel as? ProjectsListViewModel)?.updateProjectList(apiMessage.projects) }
                 is ProjectFileTreeResponse -> {
                     (currentViewmodel as? CodeEditorViewModel)?.updateProjectTree(apiMessage.fileTree)
+                }
+                is ResultOfRunResponse -> {
+                    (currentViewmodel as? CodeEditorViewModel)?.onRunResult(apiMessage.result)
+                }
+                is FileContentResponse -> {
+                    (currentViewmodel as? CodeEditorViewModel)?.updateCurrentFileContent(apiMessage.content)
                 }
                 else -> {}
             }
@@ -56,6 +65,10 @@ object Handler {
     suspend fun runProject() { Client.sendPacket(RunCurrentConfigCommand(generateUuid())) }
 
     suspend fun stopProject() { Client.sendPacket(StopCurrentConfigCommand(generateUuid())) }
+
+    suspend fun getFileContent(filePath: String) {
+        Client.sendPacket(GetFileContent(generateUuid(), filePath))
+    }
 
     fun setCurrentViewmodel(viewmodel: ViewModel) { currentViewmodel = viewmodel }
 
