@@ -5,9 +5,3 @@ plugins {
     alias(libs.plugins.kotlinCompose) apply false
     alias(libs.plugins.androidApplication) apply false
 }
-
-allprojects {
-    repositories {
-        mavenCentral()
-    }
-}
