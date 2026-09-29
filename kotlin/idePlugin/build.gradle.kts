@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.intellijPlatform)
+    id("org.jetbrains.intellij.platform")
     alias(libs.plugins.ksp)
 }
 
@@ -10,12 +10,6 @@ version = "1.0.0"
 
 kotlin {
     jvmToolchain(21)
-}
-
-repositories {
-    intellijPlatform {
-        defaultRepositories()
-    }
 }
 
 dependencies {
