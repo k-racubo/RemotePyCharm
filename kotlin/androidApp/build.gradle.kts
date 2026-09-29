@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 }
 
-repositories {
-    google()
-}
-
 android {
     namespace = "com.kracubo.app"
     compileSdk = 36
