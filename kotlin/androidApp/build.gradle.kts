@@ -5,13 +5,44 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 }
 
+val releaseTaskRequested = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("Release", ignoreCase = true)
+}
+
+val requiredReleaseProperties = listOf(
+    "RELEASE_STORE_FILE",
+    "RELEASE_STORE_PASSWORD",
+    "RELEASE_KEY_ALIAS",
+    "RELEASE_KEY_PASSWORD"
+)
+
+if (releaseTaskRequested) {
+    val missing = requiredReleaseProperties.filter { prop -> !project.hasProperty(prop) }
+
+    if (missing.isNotEmpty()) {
+        throw GradleException(
+            "Missing release signing properties: ${missing.joinToString(", ")}. " +
+                    "Please set them in ~/.gradle/gradle.properties or pass via -P flags."
+        )
+    }
+
+    val storeFile = rootProject.file(providers.gradleProperty("RELEASE_STORE_FILE").get())
+
+    if (!storeFile.isFile) {
+        throw GradleException(
+            "Release keystore not found at: ${storeFile.absolutePath}. " +
+                    "Check RELEASE_STORE_FILE in ~/.gradle/gradle.properties."
+        )
+    }
+}
+
 android {
     namespace = "com.kracubo.app"
     compileSdk = 36
 
     signingConfigs {
         create("release") {
-            storeFile = file(providers.gradleProperty("RELEASE_STORE_FILE").get())
+            storeFile = rootProject.file(providers.gradleProperty("RELEASE_STORE_FILE").get())
             storePassword = providers.gradleProperty("RELEASE_STORE_PASSWORD").get()
             keyAlias = providers.gradleProperty("RELEASE_KEY_ALIAS").get()
             keyPassword = providers.gradleProperty("RELEASE_KEY_PASSWORD").get()
@@ -22,6 +53,7 @@ android {
         applicationId = "com.kracubo.app"
         minSdk = 25
         targetSdk = 36
+        versionCode = 1
         versionName = "1.0.0-Alpha"
     }
 
@@ -71,7 +103,6 @@ dependencies {
 
     implementation(libs.androidxComposeUi)
     implementation(libs.androidxComposeGraphics)
-    implementation(libs.androidxComposePreviewTooling)
     implementation(libs.androidxComposeMaterial3)
     implementation(libs.androidxComposeNav)
     implementation(libs.activityKtx)

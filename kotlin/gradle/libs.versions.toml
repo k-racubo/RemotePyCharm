@@ -40,7 +40,6 @@ androidxComposeBom = { module = "androidx.compose:compose-bom", version.ref = "c
 
 androidxComposeUi = { module = "androidx.compose.ui:ui" }
 androidxComposeGraphics = { module = "androidx.compose.ui:ui-graphics" }
-androidxComposePreviewTooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidxComposeMaterial3 = { module = "androidx.compose.material3:material3" }
 
 androidxComposeNav = { module = "androidx.navigation:navigation-compose", version.ref = "androidxComposeNav" }
