@@ -7,8 +7,6 @@ kotlin = "2.2.10"
 
 agp = "8.12.3"
 
-intellijPlatform = "2.11.0"
-
 androidxCore = "1.17.0"
 androidxLifecycle = "2.10.0"
 androidxActivity = "1.13.0"
@@ -80,8 +78,6 @@ mlkit = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
-intellijPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
 
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
