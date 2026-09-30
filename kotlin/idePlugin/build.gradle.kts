@@ -15,9 +15,8 @@ kotlin {
 dependencies {
     implementation(project(":api"))
     implementation(libs.mDnsCore)
-    implementation(libs.kotlinxSerialization)
 
-    implementation(libs.autoServiceAnnotations)
+    compileOnly(libs.autoServiceAnnotations)
     ksp(libs.autoServiceKsp)
 
     intellijPlatform {
@@ -28,16 +27,20 @@ dependencies {
     implementation(libs.ktorCore)
     implementation(libs.ktorCio)
     implementation(libs.ktorWebsockets)
-    implementation(libs.ktorContentNegotation)
+    implementation(libs.ktorContentNegotiation)
     implementation(libs.ktorSerialization)
     implementation(libs.ktorCors)
 
     compileOnly(libs.kotlinxCoroutines)
 }
 
+// IntelliJ Platform bundles its own patched kotlinx-coroutines.
+// Bundling ours causes classloader conflicts at runtime.
+// Strip coroutines from runtime entirely; they come from the IDE.
 configurations.all {
     exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
     exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
+    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
 }
 
 intellijPlatform {

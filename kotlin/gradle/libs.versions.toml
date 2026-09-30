@@ -48,7 +48,7 @@ activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref 
 ktorCore = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
 ktorCio = { group = "io.ktor", name = "ktor-server-cio", version.ref = "ktor" }
 ktorWebsockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
-ktorContentNegotation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
+ktorContentNegotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 ktorClientContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktorClientWebsockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
 ktorCors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }

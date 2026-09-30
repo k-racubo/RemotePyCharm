@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.dependencies
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinSerialization)
@@ -8,5 +10,5 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.kotlinxSerialization)
+    api(libs.kotlinxSerialization)
 }

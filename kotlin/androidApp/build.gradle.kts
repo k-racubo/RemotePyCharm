@@ -96,7 +96,6 @@ dependencies {
     implementation(libs.ktorClientCore)
     implementation(libs.ktorClientCio)
     implementation(libs.ktorClientWebsockets)
-    implementation(libs.kotlinxSerialization)
     implementation(libs.kotlinxCoroutines)
     implementation(libs.ktorSerialization)
 
