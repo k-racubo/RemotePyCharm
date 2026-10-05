@@ -1,11 +1,10 @@
-package project.close
+package core
 
-import core.Command
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("CLOSE_PROJECT_COMMAND")
+@SerialName("CloseProjectCommand")
 data class CloseProjectCommand(
     override val requestId: String,
 ) : Command()
