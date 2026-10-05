@@ -4,9 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("OpenProjectCommand")
-data class OpenProjectCommand(
+@SerialName("GetProjectsListCommand")
+data class GetProjectsListCommand(
     override val requestId: String,
-    val projectName: String,
-    val projectPath: String,
 ) : Command()

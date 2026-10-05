@@ -1,11 +1,10 @@
-package project
+package core
 
-import core.Event
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("WELCOME")
+@SerialName("WelcomePacket")
 data class WelcomePacket(
     override val requestId: String = "Welcome",
     val server: String = "remotePyCharm",

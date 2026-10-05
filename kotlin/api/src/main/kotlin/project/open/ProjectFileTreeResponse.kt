@@ -1,14 +1,12 @@
-package project.open
+package core
 
-import core.Response
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 @Serializable
-@SerialName("PROJECT_FILE_TREE_RESPONSE")
+@SerialName("ProjectFileTreeResponse")
 data class ProjectFileTreeResponse(
     override val requestId: String,
-    override val success: Boolean,
     val fileTree: JsonObject
 ) : Response()

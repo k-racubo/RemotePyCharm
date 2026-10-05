@@ -1,13 +1,11 @@
-package project.run
+package core
 
-import core.Response
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("RESULT_OF_RUN_RESPONSE")
+@SerialName("ResultOfRunResponse")
 data class ResultOfRunResponse(
     override val requestId: String,
-    override val success: Boolean,
     val result: String
 ) : Response()

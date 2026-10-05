@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 @SerialName("ERROR")
 data class ErrorResponse(
     override val requestId: String,
-    override val success: Boolean = false,
-    val errorCode: String,
+    val errorType: String,
     val errorMessage: String
 ) : Response()

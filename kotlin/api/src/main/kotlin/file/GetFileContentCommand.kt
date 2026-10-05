@@ -1,11 +1,11 @@
-package project.list
+package core
 
-import core.Command
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("GET_PROJECTS_LIST")
-data class GetProjectsList(
+@SerialName("GetFileContentCommand")
+data class GetFileContentCommand(
     override val requestId: String,
+    val filePath: String,
 ) : Command()
