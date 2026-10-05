@@ -26,7 +26,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import project.WelcomePacket
+import core.WelcomePacket
 import kotlin.time.Duration.Companion.seconds
 
 object Client {

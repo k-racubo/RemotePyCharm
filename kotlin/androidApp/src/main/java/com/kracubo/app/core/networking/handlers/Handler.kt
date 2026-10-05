@@ -8,17 +8,17 @@ import com.kracubo.app.core.viewmodels.codeditor.CodeEditorViewModel
 import core.ApiJson
 import core.Event
 import core.Response
-import file.FileContentResponse
-import file.GetFileContent
-import project.OnProjectClosed
-import project.close.CloseProjectCommand
-import project.list.GetProjectsList
-import project.list.ProjectsListResponse
-import project.open.OpenProjectCommand
-import project.open.ProjectFileTreeResponse
-import project.run.ResultOfRunResponse
-import project.run.RunCurrentConfigCommand
-import project.run.StopCurrentConfigCommand
+import core.FileContentResponse
+import core.GetFileContentCommand
+import core.OnProjectClosedEvent
+import core.CloseProjectCommand
+import core.GetProjectsListCommand
+import core.ProjectsListResponse
+import core.OpenProjectCommand
+import core.ProjectFileTreeResponse
+import core.ResultOfRunResponse
+import core.RunCurrentConfigCommand
+import core.StopCurrentConfigCommand
 import java.util.UUID
 
 object Handler {
@@ -41,14 +41,16 @@ object Handler {
             }
         } catch (_: Exception) {
             when (ApiJson.instance.decodeFromString<Event>(message)) {
-                is OnProjectClosed -> {
+                is OnProjectClosedEvent -> {
                     (currentViewmodel as? CodeEditorViewModel)?.onProjectClosedOnServer()
                 }
+
+                else -> {}
             }
         }
     }
 
-    suspend fun getProjectsList() { Client.sendPacket(GetProjectsList(generateUuid())) }
+    suspend fun getProjectsList() { Client.sendPacket(GetProjectsListCommand(generateUuid())) }
 
     suspend fun openProject(projectName: String, projectPath: String) {
         Client.sendPacket(OpenProjectCommand(generateUuid(), projectName, projectPath))
@@ -67,7 +69,7 @@ object Handler {
     suspend fun stopProject() { Client.sendPacket(StopCurrentConfigCommand(generateUuid())) }
 
     suspend fun getFileContent(filePath: String) {
-        Client.sendPacket(GetFileContent(generateUuid(), filePath))
+        Client.sendPacket(GetFileContentCommand(generateUuid(), filePath))
     }
 
     fun setCurrentViewmodel(viewmodel: ViewModel) { currentViewmodel = viewmodel }
