@@ -5,7 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.kracubo.events.localServer.ActiveProjectClosedListener
 import com.kracubo.events.localServer.ActiveProjectClosedTopics
-import project.OnProjectClosed
+import core.OnProjectClosedEvent
 
 @Suppress("UNUSED")
 @Service(Service.Level.APP)
@@ -16,7 +16,7 @@ class PluginEventNotifier : Disposable {
             .subscribe(ActiveProjectClosedTopics.ACTIVE_PROJECT_CLOSED,
                 object : ActiveProjectClosedListener {
                     override suspend fun onActiveProjectClosed() {
-                        LocalWebSocketServer.getInstance().sendEventPacket(OnProjectClosed())
+                        LocalWebSocketServer.getInstance().sendEventPacket(OnProjectClosedEvent())
                     }
             })
     }

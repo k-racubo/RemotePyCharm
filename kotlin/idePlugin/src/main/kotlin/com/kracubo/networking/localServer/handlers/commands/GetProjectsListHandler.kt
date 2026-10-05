@@ -3,18 +3,17 @@ package com.kracubo.networking.localServer.handlers.commands
 import com.google.auto.service.AutoService
 import com.kracubo.networking.localServer.handlers.ICommandHandler
 import core.Response
-import project.list.GetProjectsList
-import project.list.ProjectsListResponse
+import core.GetProjectsListCommand
+import core.ProjectsListResponse
 
 @Suppress("UNUSED")
 @AutoService(ICommandHandler::class)
-class GetProjectsListHandler : ICommandHandler<GetProjectsList> {
-    override val commandClass = GetProjectsList::class
+class GetProjectsListHandler : ICommandHandler<GetProjectsListCommand> {
+    override val commandClass = GetProjectsListCommand::class
 
-    override suspend fun handle(command: GetProjectsList): Response {
+    override suspend fun handle(command: GetProjectsListCommand): Response {
         return ProjectsListResponse(
             command.requestId,
-            true,
             projectManager.getProjects(),
             projectManager.getCurrentProjectInfo()
         )

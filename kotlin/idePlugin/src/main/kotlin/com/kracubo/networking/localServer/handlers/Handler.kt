@@ -45,7 +45,7 @@ class Handler {
             return handler?.handle(event)
         } catch (_: Exception) {
             // needs normal api for errors
-            return ErrorResponse("", false, "", "")
+            return ErrorResponse("", "", "")
         }
     }
 }

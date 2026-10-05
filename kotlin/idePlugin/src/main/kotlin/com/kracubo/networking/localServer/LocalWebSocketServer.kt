@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonObject
-import project.WelcomePacket
+import core.WelcomePacket
 import kotlin.time.Duration.Companion.seconds
 
 @Service(Service.Level.APP)

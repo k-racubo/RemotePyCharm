@@ -5,8 +5,8 @@ import com.intellij.openapi.components.service
 import com.kracubo.core.project.ProjectRunner
 import com.kracubo.networking.localServer.handlers.ICommandHandler
 import core.Response
-import project.run.ResultOfRunResponse
-import project.run.RunCurrentConfigCommand
+import core.ResultOfRunResponse
+import core.RunCurrentConfigCommand
 
 @Suppress("UNUSED")
 @AutoService(ICommandHandler::class)
@@ -20,7 +20,6 @@ class RunCurrentConfigCommandHandler : ICommandHandler<RunCurrentConfigCommand> 
 
                 ResultOfRunResponse(
                     command.requestId,
-                    true,
                     result
                 )
             })

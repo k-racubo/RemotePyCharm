@@ -6,8 +6,8 @@ import com.intellij.openapi.components.service
 import com.kracubo.core.project.ProjectStructureProvider
 import com.kracubo.networking.localServer.handlers.ICommandHandler
 import core.Response
-import project.open.OpenProjectCommand
-import project.open.ProjectFileTreeResponse
+import core.OpenProjectCommand
+import core.ProjectFileTreeResponse
 
 @Suppress("UNUSED")
 @AutoService(ICommandHandler::class)
@@ -23,7 +23,6 @@ class OpenProjectCommandHandler : ICommandHandler<OpenProjectCommand> {
 
                 ProjectFileTreeResponse(
                     requestId = command.requestId,
-                    success = true,
                     fileTree = tree
                 )
             }
