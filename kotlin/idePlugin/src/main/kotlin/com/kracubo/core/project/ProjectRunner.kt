@@ -16,13 +16,18 @@ import com.kracubo.controlPanel.logger.MessageType
 import com.kracubo.controlPanel.logger.SenderType
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.openapi.util.Key
 
 @Service(Service.Level.PROJECT)
 class ProjectRunner(val project: Project) {
 
+    @Volatile
     private var currentProcessHandler: ProcessHandler? = null
 
     suspend fun runCurrentConfigAsync(): String = suspendCancellableCoroutine { continuation ->
+        continuation.invokeOnCancellation { stopCurrentConfig() }
+
         runCurrentConfig { fullLog ->
             if (continuation.isActive) { continuation.resume(fullLog) }
         }
@@ -46,6 +51,7 @@ class ProjectRunner(val project: Project) {
 
         if (selected == null) {
             Logger.log("Setup run configuration for run project", SenderType.LOGGER, MessageType.WARNING)
+            onFinished("ERROR: No run configuration selected")
             return
         }
 
@@ -63,13 +69,14 @@ class ProjectRunner(val project: Project) {
                     currentProcessHandler = handler
 
                     handler.addProcessListener(object : ProcessListener {
-                        override fun onTextAvailable(event: ProcessEvent, outputType: com.intellij.openapi.util.Key<*>) {
-                            if (com.intellij.execution.process.ProcessOutputTypes.SYSTEM != outputType) {
+                        override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+                            if (ProcessOutputTypes.SYSTEM != outputType) {
                                 outputBuffer.append(event.text)
                             }
                         }
 
                         override fun processTerminated(event: ProcessEvent) {
+                            currentProcessHandler = null
                             onFinished(outputBuffer.toString())
                         }
                     })
@@ -81,6 +88,7 @@ class ProjectRunner(val project: Project) {
 
         } catch (e: Exception) {
             Logger.log("Run Project error: $e", SenderType.LOGGER, MessageType.ERROR)
+            onFinished("ERROR: ${e.message}")
         }
     }
 }
