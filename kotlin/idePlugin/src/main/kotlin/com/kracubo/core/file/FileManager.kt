@@ -22,14 +22,12 @@ class FileManager(private val project: Project) {
 
     private fun getVirtualFile(relativePath: String): VirtualFile? {
         val basePath = project.basePath ?: return null
-        val fileUrl = "file://$basePath/$relativePath"
+        val fileUrl = if (relativePath.isEmpty()) "file://$basePath"
+        else "file://$basePath/$relativePath"
         return VirtualFileManager.getInstance().findFileByUrl(fileUrl)
     }
 
-    private fun getProjectRoot(): VirtualFile? {
-        val basePath = project.basePath ?: return null
-        return VirtualFileManager.getInstance().findFileByUrl("file://$basePath")
-    }
+    private fun getProjectRoot(): VirtualFile? = getVirtualFile("")
 
     private fun createDirectories(root: VirtualFile, relativePath: String): VirtualFile? {
         var current = root
