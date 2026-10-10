@@ -39,8 +39,6 @@ import io.ktor.websocket.readText
 import io.ktor.websocket.send
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonObject
 import core.WelcomePacket
 import kotlin.time.Duration.Companion.seconds
@@ -50,12 +48,17 @@ class LocalWebSocketServer : Disposable {
 
     companion object { fun getInstance() = service<LocalWebSocketServer>() }
 
-    var port: Int? = null
+    @Volatile
+    private var port: Int? = null
+
     private var server: EmbeddedServer<*, *>? = null
 
+    @Volatile
     private var currentSession: WebSocketSession? = null
 
+    @Volatile
     var isServerStarted: Boolean = false
+        private set
 
     private val handler by lazy { Handler.getInstance() }
 
@@ -108,12 +111,14 @@ class LocalWebSocketServer : Disposable {
 
             true
         } catch (e: Exception) {
-            println(e)
+            Logger.log("Failed to start server: ${e.message}", SenderType.LOCAL_SERVER, MessageType.ERROR)
             false
         }
     }
 
     fun stop() {
+        UdpListener.stop()
+
         isServerStarted = false
         server?.stop(1000, 5000)
 
@@ -121,7 +126,6 @@ class LocalWebSocketServer : Disposable {
         server = null
         currentSession = null
 
-        UdpListener.stop()
 
         Logger.log("Local server stopped", senderType = SenderType.LOCAL_SERVER)
     }
@@ -180,9 +184,7 @@ class LocalWebSocketServer : Disposable {
 
                         val responseString = ApiJson.instance.encodeToString(response)
 
-                        val sendMutex = Mutex()
-
-                        sendMutex.withLock { session.send(responseString) }
+                        session.send(responseString)
 
                         Logger.log(
                             "Packet sent to $hostAddress:\n${responseString.prettyJson()}",
@@ -212,8 +214,5 @@ class LocalWebSocketServer : Disposable {
         } else false
     }
 
-    override fun dispose() {
-        UdpListener.stop()
-        stop()
-    }
+    override fun dispose() { stop() }
 }
