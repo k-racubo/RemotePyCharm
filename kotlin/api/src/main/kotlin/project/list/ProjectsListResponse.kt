@@ -9,5 +9,4 @@ import project.list.ProjectInfo
 data class ProjectsListResponse(
     override val requestId: String,
     val projects: List<ProjectInfo>?,
-    val currentProject: ProjectInfo?
 ) : Response()

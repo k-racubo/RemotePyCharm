@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 @SerialName("WelcomePacket")
 data class WelcomePacket(
     override val requestId: String = "Welcome",
-    val server: String = "remotePyCharm",
-    val version: String
+    val version: String,
+    val versionProtocol: Int
 ) : Event()
