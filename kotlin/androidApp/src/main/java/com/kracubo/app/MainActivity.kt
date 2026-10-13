@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.kracubo.app.core.networking.Client
 import com.kracubo.app.ui.screens.mainmenu.RemoteScreen
 import com.kracubo.app.ui.screens.mainmenu.LocalConnectionScreen
 import com.kracubo.app.ui.screens.mainmenu.MainScreen
@@ -21,58 +20,55 @@ import com.kracubo.app.ui.screens.mainmenu.SplashScreen
 import com.kracubo.app.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
-
-    override fun onResume() {
-        super.onResume()
-        Client.disconnect()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
+
+        val skipSplash = intent.getBooleanExtra("skipSplash", false)
+        val startDestination: Any = if (skipSplash) Main else Splash
+
         setContent {
             val context = LocalContext.current
             AppTheme {
                 Surface(Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "splash") {
-                        composable("splash") {
+                    NavHost(navController = navController, startDestination = startDestination) {
+                        composable<Splash> {
                             SplashScreen {
-                                navController.navigate("main") {
-                                    popUpTo("splash") { inclusive = true }
+                                navController.navigate(Main) {
+                                    popUpTo<Splash> { inclusive = true }
                                 }
                             }
                         }
-                        composable("main") {
+                        composable<Main> {
                             MainScreen(
-                                onLocalScreen = { navController.navigate("LocalScreen")},
-                                onRemoteScreen = {navController.navigate("RemoteScreen") }
+                                onLocalScreen = { navController.navigate(LocalScreen) },
+                                onRemoteScreen = { navController.navigate(RemoteScreen) }
                             )
                         }
-                        composable("RemoteScreen") {
+                        composable<RemoteScreen> {
                             RemoteScreen(
                                 connection = {
                                     Toast.makeText(context, "Feature in dev", Toast.LENGTH_SHORT)
                                         .show()
                                 },
                                 exit = {
-                                    navController.navigate("main"){
-                                        popUpTo("RemoteScreen"){
+                                    navController.navigate(Main){
+                                        popUpTo<RemoteScreen> {
                                             inclusive = true
                                         }
                                     }
                                 }
                             )
                         }
-                        composable("LocalScreen"){
+                        composable<LocalScreen> {
                             LocalConnectionScreen(exitToMainScreen = {
-                                navController.navigate("main"){
-                                    popUpTo("LocalScreen"){
+                                navController.navigate(Main){
+                                    popUpTo<LocalScreen> {
                                         inclusive = true
                                     }
                                 }
                             }, toCodeEditor = {
-                                navController.popBackStack("LocalScreen", inclusive = true)
                                 context.startActivity(Intent(context, CodeEditorActivity::class.java))
                                 (context as? Activity)?.finish()
                             })
