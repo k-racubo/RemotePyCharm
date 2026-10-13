@@ -4,7 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.kracubo.events.logwindow.AppLogTopics
 import com.kracubo.events.logwindow.LogEntry
 import java.io.File
-import java.io.RandomAccessFile
+import java.io.FileWriter
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -49,18 +49,13 @@ object Logger {
     private fun logToFile(logMessage: String) {
         fileLoggerThread.submit {
             try {
-                synchronized(this) {
-                    val file = logFile ?: return@submit
+                val file = logFile ?: return@submit
 
-                    if (file.exists() && file.length() >= MAX_LOG_FILE_SIZE) {
-                        rotateLogFile()
-                    }
-
-                    RandomAccessFile(file, "rw").use { raf ->
-                        raf.seek(raf.length())
-                        raf.write(logMessage.toByteArray())
-                    }
+                if (file.exists() && file.length() >= MAX_LOG_FILE_SIZE) {
+                    rotateLogFile()
                 }
+
+                FileWriter(logFile!!, true).use { writer -> writer.write(logMessage) }
             } catch (e: Exception) { System.err.println("Failed to write log: ${e.message}") }
         }
     }

@@ -8,5 +8,5 @@ import kotlin.reflect.KClass
 interface IEventHandler<T : Event> {
     val eventClass: KClass<T>
 
-    fun handle(event: T) : Response?
+    suspend fun handle(event: T) : Response?
 }

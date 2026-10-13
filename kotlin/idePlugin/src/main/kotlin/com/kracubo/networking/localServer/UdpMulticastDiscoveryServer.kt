@@ -45,7 +45,7 @@ object UdpListener {
                             mapOf("version" to version)
                         )
 
-                        jmdns?.registerService(serviceInfo)
+                        jmdns.registerService(serviceInfo)
 
                         synchronized(jmdnsInstances) { jmdnsInstances.add(jmdns) }
                     }
@@ -54,9 +54,9 @@ object UdpListener {
                 Logger.log("Server published in mDNS ($SERVICE_TYPE on all available interfaces)",
                     SenderType.LOCAL_SERVER)
 
-            } catch (_: Exception) {
-                Logger.log("mDNS publishing error ($SERVICE_TYPE on port: $serverPort)", SenderType.LOCAL_SERVER,
-                    MessageType.ERROR)
+            } catch (e: Exception) {
+                Logger.log("mDNS publishing error: ${e.message} ($SERVICE_TYPE on port: $serverPort)",
+                    SenderType.LOCAL_SERVER, MessageType.ERROR)
             }
         }
     }

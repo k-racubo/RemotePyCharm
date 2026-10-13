@@ -83,12 +83,6 @@ class CoreProjectManager : Disposable {
         return projects
     }
 
-    fun getCurrentProjectInfo() : ProjectInfo {
-        val openProjects = ProjectManager.getInstance().openProjects
-
-        return ProjectInfo(openProjects.first().name, openProjects.first().basePath.toString())
-    }
-
     @Suppress("UnstableApiUsage")
     fun openProject(pName: String, pPath: String) {
         val path = Paths.get(pPath)

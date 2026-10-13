@@ -5,6 +5,7 @@ import com.intellij.openapi.components.service
 import com.kracubo.core.file.FileManager
 import com.kracubo.networking.localServer.handlers.ICommandHandler
 import core.ErrorResponse
+import core.ErrorType
 import core.Response
 import core.FileContentResponse
 import core.GetFileContentCommand
@@ -22,7 +23,7 @@ class GetFileContentHandler : ICommandHandler<GetFileContentCommand> {
                 if (content.isEmpty()) {
                     return@runWithProject ErrorResponse(
                         command.requestId,
-                        "GET_FILE_CONTENT_FAILED",
+                        ErrorType.GET_FILE_CONTENT_FAILED,
                         "VFS can't read or found file"
                     )
                 }

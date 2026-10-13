@@ -15,7 +15,6 @@ class GetProjectsListHandler : ICommandHandler<GetProjectsListCommand> {
         return ProjectsListResponse(
             command.requestId,
             projectManager.getProjects(),
-            projectManager.getCurrentProjectInfo()
         )
     }
 }
